@@ -17,7 +17,13 @@ class PaymentMethodFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->randomElement(['Bank Transfer', 'Virtual Account', 'QRIS', 'Cash']),
+            'bank_name' => $this->faker->randomElement(['BRI', 'BCA', 'Mandiri', 'BSI', 'BNI', 'Permata']),
+            'bank_logo' => $this->faker->imageUrl,
+            'qr_image' => $this->faker->imageUrl,
+            'status' => $this->faker->boolean,
+            'account_number' => $this->faker->numerify('############'),
+            'account_holder' => $this->faker->name,
         ];
     }
 }
