@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('order_id')->constrained()->onDelete('cascade')->unique();
+            $table->foreignId('payment_method_id')->constrained()->onDelete('cascade');
+            $table->date('payment_date');
+            $table->unsignedBigInteger('amount');
+            $table->string('status');
             $table->timestamps();
         });
     }

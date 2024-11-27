@@ -27,6 +27,3 @@ return new class extends Migration
         Schema::dropIfExists('photos');
     }
 };
-
-// image_url varchar
-//   product_id integer
