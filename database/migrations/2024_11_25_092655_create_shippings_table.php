@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shippings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->foreignId('order_id')->constrained()->onDelete('cascade')->unique();
             $table->string('shipping_method'); // express | standard
             $table->string('tracking_number');
             $table->unsignedBigInteger('shipping_cost');
