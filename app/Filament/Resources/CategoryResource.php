@@ -35,17 +35,12 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->label('Category'),
                 Tables\Columns\TextColumn::make('description'),
             ])
-            ->filters([
-                // Tables\Filters\SelectFilter::make('type')
-                //     ->options([
-                //         'cat' => 'Cat',
-                //         'dog' => 'Dog',
-                //         'rabbit' => 'Rabbit',
-                //     ]),
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
