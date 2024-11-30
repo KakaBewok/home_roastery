@@ -36,13 +36,15 @@ class ProductResource extends Resource
                     ->prefix('IDR')
                     ->required(),
                 Forms\Components\Select::make('unit')->required()->options([
-                    'gram' => 'Gram',
-                    'kilogram' => 'Kilogram',
-                    'pcs' => 'Pcs',
+                    'Gram' => 'Gram',
+                    'Kilogram' => 'Kilogram',
+                    'Pcs' => 'Pcs',
                 ]),
                 Forms\Components\TextInput::make('stock')->required()
                     ->numeric()
                     ->required(),
+                Forms\Components\Textarea::make('description')->rows(10)
+                    ->cols(20),
                 Forms\Components\Select::make('category_id')
                     ->relationship('category', 'name')
                     ->searchable()
@@ -58,24 +60,15 @@ class ProductResource extends Resource
                     ->relationship('photos')
                     ->schema([
                         Forms\Components\FileUpload::make('image_url')
-                            ->label('Product image')
+                            ->label('Upload image')
                             ->image()
                             ->directory('photos')
-                            ->required(),
+                            ->maxSize(1024)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png'])
                     ])
-                    ->columns(1) // Tampilkan satu kolom
-                    ->label('Foto Produk'),
-                Forms\Components\Textarea::make('description')->rows(10)
-                    ->cols(20),
-
+                    ->columns(1)
+                    ->label('Product images'),
             ]);
-
-        // 'category_id', ===
-        // 'name', === xxx
-        // 'description', === xxx
-        // 'price', === xxx
-        // 'unit', === xxx
-        // 'stock', === xxx
     }
 
     public static function table(Table $table): Table

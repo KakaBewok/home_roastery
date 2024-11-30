@@ -14,7 +14,6 @@ class ProductObserver
     {
         if ($product->photos->isNotEmpty()) {
             foreach ($product->photos as $photo) {
-                dd($photo->image_url);
                 if (Storage::disk('public')->exists($photo->image_url)) {
                     Storage::disk('public')->delete($photo->image_url);
                 }
