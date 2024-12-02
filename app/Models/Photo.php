@@ -14,4 +14,13 @@ class Photo extends Model
         'image_url',
         'product_id'
     ];
+
+    protected static function booted(): void
+    {
+        self::deleting(static function (Photo $photo): void {
+            if (Storage::disk('public')->exists($photo->image_url)) {
+                Storage::disk('public')->delete($photo->image_url);
+            }
+        });
+    }
 }
