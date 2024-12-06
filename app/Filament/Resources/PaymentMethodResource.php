@@ -6,6 +6,7 @@ use App\Filament\Resources\PaymentMethodResource\Pages;
 use App\Filament\Resources\PaymentMethodResource\RelationManagers;
 use App\Models\PaymentMethod;
 use Filament\Forms;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,7 +24,28 @@ class PaymentMethodResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('bank_name')->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('account_number')->required()
+                    ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('account_holder')->required()
+                    ->maxLength(255),
+                Forms\Components\FileUpload::make('qr_image')
+                    ->label('Upload QR image')
+                    ->image()
+                    ->directory('photos')
+                    ->maxSize(1024)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png']),
+                Forms\Components\FileUpload::make('bank_logo')
+                    ->label('Upload bank logo')
+                    ->image()
+                    ->directory('photos')
+                    ->maxSize(1024)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png']),
+                Toggle::make('Is active'),
             ]);
     }
 
