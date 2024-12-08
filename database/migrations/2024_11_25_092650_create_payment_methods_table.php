@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('bank_name');
-            $table->string('bank_logo');
+            $table->string('bank_logo')->nullable();;
             $table->string('account_number');
             $table->string('account_holder');
-            $table->string('qr_image');
-            $table->string('status');
+            $table->string('qr_image')->nullable();;
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

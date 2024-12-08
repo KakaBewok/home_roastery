@@ -10,6 +10,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -18,7 +19,7 @@ class PaymentMethodResource extends Resource
 {
     protected static ?string $model = PaymentMethod::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
     public static function form(Form $form): Form
     {
@@ -45,7 +46,7 @@ class PaymentMethodResource extends Resource
                     ->directory('photos')
                     ->maxSize(1024)
                     ->acceptedFileTypes(['image/jpeg', 'image/png']),
-                Toggle::make('Is active'),
+                Toggle::make('status')->label('Is Active'),
             ]);
     }
 
@@ -53,13 +54,22 @@ class PaymentMethodResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('bank_name'),
+                Tables\Columns\TextColumn::make('account_number'),
+                IconColumn::make('status')
+                    ->label('Is active')
+                    ->boolean()
+                    ->trueColor('info')
+                    ->falseColor('warning'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -67,6 +77,16 @@ class PaymentMethodResource extends Resource
                 ]),
             ]);
     }
+
+    // protected $fillable = [
+    //     'name',
+    //     'bank_name',
+    //     'bank_logo',
+    //     'account_number',
+    //     'account_holder',
+    //     'qr_image',
+    //     'status'
+    // ];
 
     public static function getRelations(): array
     {
