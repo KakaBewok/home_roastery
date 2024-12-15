@@ -11,12 +11,12 @@ function ProductCard({ product }: { product: Product }) {
 
     return (
         <a href={`/products/${id}`}>
-            <div className="mx-auto border rounded shadow-lg h-120 w-80 border-palette-lighter">
-                <div className="relative border-b-2 h-72 border-palette-lighter">
+            <div className="mx-auto rounded shadow-md h-120 w-80">
+                <div className="relative">
                     <img
                         src={productImage}
                         alt={productImage}
-                        className="w-full duration-500 ease-in-out transform hover:scale-110 "
+                        className="w-full duration-300 ease-in-out transform rounded-t-md hover:scale-105"
                     />
                 </div>
                 <div className="relative h-48">
