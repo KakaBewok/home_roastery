@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.triangle {
+}
+
+.triangle::before {
+    content: "";
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0em;
+    border: 1em solid transparent;
+    border-left-color: #ffffff;
+}

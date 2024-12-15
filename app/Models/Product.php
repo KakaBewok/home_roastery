@@ -28,6 +28,8 @@ class Product extends Model
         'stock',
     ];
 
+    protected $with = ['photos', 'category'];
+
     protected static function booted(): void
     {
         self::deleting(static function (Product $product): void {

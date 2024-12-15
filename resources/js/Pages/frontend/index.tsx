@@ -35,7 +35,7 @@ function IndexPage({ products }: { products: Product[] }) {
     return (
         <div className="max-w-6xl mx-auto">
             <StoreHeading />
-            <ProductListings products={dummyProducts} />
+            <ProductListings products={products} />
         </div>
     );
 }
