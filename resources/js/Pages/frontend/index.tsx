@@ -1,6 +1,7 @@
 import StoreHeading from "../../Components/frontend/StoreHeading";
 import ProductListings from "../../Components/frontend/ProductListings";
 import { Product } from "@/types/frontend/product";
+import Layout from "@/Components/frontend/Layout";
 
 const dummyProducts: Product[] = [
     {
@@ -33,10 +34,12 @@ const dummyProducts: Product[] = [
 
 function IndexPage({ products }: { products: Product[] }) {
     return (
-        <div className="max-w-6xl mx-auto">
-            <StoreHeading />
-            <ProductListings products={products} />
-        </div>
+        <Layout>
+            <div className="max-w-6xl mx-auto">
+                <StoreHeading />
+                <ProductListings products={products} />
+            </div>
+        </Layout>
     );
 }
 
