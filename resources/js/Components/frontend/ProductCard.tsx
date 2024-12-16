@@ -11,22 +11,22 @@ function ProductCard({ product }: { product: Product }) {
 
     return (
         <a href={`/products/${id}`}>
-            <div className="mx-auto rounded shadow-md h-120 w-80">
-                <div className="relative">
+            <div className="rounded shadow-md h-120 w-80">
+                <div className="p-2">
                     <img
                         src={productImage}
                         alt={productImage}
-                        className="w-full duration-300 ease-in-out transform rounded-t-md hover:scale-105"
+                        className="object-cover duration-300 ease-in-out transform rounded-t-md hover:scale-105"
                     />
                 </div>
                 <div className="relative h-48">
-                    <div className="px-6 pt-4 text-2xl font-semibold text-orange-400 font-primary">
+                    <h1 className="px-6 pt-4 text-2xl font-semibold text-orange-400">
                         {name}
-                    </div>
-                    <div className="px-6 pt-2 font-light text-gray-500 text-md font-primary line-clamp-2">
+                    </h1>
+                    <p className="px-6 pt-2 font-light text-gray-500 text-md font-primary line-clamp-2">
                         {description}
-                    </div>
-                    <div className="absolute bottom-0 right-0 py-2 pl-8 pr-4 mb-4 text-base font-medium text-orange-500 bg-orange-100 rounded-tl-sm font-primary triangle">
+                    </p>
+                    <div className="absolute bottom-0 right-0 py-2 pl-8 pr-4 mb-4 font-semibold text-orange-500 bg-orange-100 rounded-tl-sm triangle">
                         <Price
                             currency="Rp. "
                             nominal={price}

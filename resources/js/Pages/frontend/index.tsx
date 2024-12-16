@@ -2,6 +2,7 @@ import StoreHeading from "../../Components/frontend/StoreHeading";
 import ProductListings from "../../Components/frontend/ProductListings";
 import { Product } from "@/types/frontend/product";
 import Layout from "@/Components/frontend/Layout";
+import { Head } from "@inertiajs/react";
 
 const dummyProducts: Product[] = [
     {
@@ -34,12 +35,13 @@ const dummyProducts: Product[] = [
 
 function IndexPage({ products }: { products: Product[] }) {
     return (
-        <Layout>
-            <div className="max-w-6xl mx-auto">
-                <StoreHeading />
-                <ProductListings products={products} />
-            </div>
-        </Layout>
+        // <Layout>
+        <div className="max-w-6xl mx-auto">
+            <Head title="Home" />
+            <StoreHeading />
+            <ProductListings products={products} />
+        </div>
+        // </Layout>
     );
 }
 

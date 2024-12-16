@@ -3,7 +3,7 @@ import ProductCard from "./ProductCard";
 
 function ProductListings({ products }: { products: Product[] }) {
     return (
-        <div className="flex flex-wrap items-center justify-center gap-10 mx-auto py-14">
+        <div className="flex flex-wrap items-center justify-center gap-10 py-14">
             {products.map((product, index) => (
                 <ProductCard key={index} product={product} />
             ))}
