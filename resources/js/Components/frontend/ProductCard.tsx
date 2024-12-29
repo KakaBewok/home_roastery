@@ -12,36 +12,32 @@ function ProductCard({ product }: { product: Product }) {
 
     return (
         <a href={`/products/${id}`}>
-            {/* <div className="rounded shadow-md h-120 w-80 "> */}
-            <div className="rounded shadow-md">
-                <div className="p-2">
-                    <img
-                        src={productImage}
-                        alt={productImage}
-                        className="object-cover duration-300 ease-in-out transform rounded-t-md hover:scale-105"
-                    />
-                </div>
-                <div className="relative h-36 md:h-48">
-                    <h1 className="px-2 pt-2 text-lg font-semibold leading-tight text-orange-400 md:pt-4 md:px-6 md:text-2xl line-clamp-1 md:line-clamp-none">
+            <div className="p-1 md:p-2 border-b-[1px]">
+                <img
+                    src={productImage}
+                    alt="Product photo"
+                    className="object-cover duration-200 ease-in-out transform rounded-sm shadow-sm hover:scale-105"
+                />
+                <div className="py-2 space-y-2 md:space-y-2 md:py-3">
+                    <h1 className="text-sm font-semibold leading-snug md:text-base text-slate-800 line-clamp-1">
                         {name}
                     </h1>
-                    <p className="px-2 pt-2 text-xs font-light text-gray-500 md:px-6 md:text-base line-clamp-2">
+                    <p className="text-xs font-light text-slate-500 line-clamp-2">
                         {description}
                     </p>
-                    <div className="absolute bottom-0 right-0 py-1 pl-6 pr-2 mb-4 font-semibold text-orange-500 bg-orange-100 rounded-tl-sm md:pr-4 md:pl-8 md:py-2 triangle">
-                        <Price
-                            currency="Rp. "
-                            nominal={price}
-                            className="text-sm md:text-md"
-                        />
-                    </div>
-                    <div>
+                    <div className="flex items-center justify-between">
                         <Button
-                            className="border rounded-3xl border-slate-700"
+                            className="text-xs border rounded-3xl border-slate-800"
                             variant="outline"
+                            size="sm"
                         >
                             Add to cart
                         </Button>
+                        <Price
+                            currency="Rp. "
+                            nominal={price}
+                            className="text-xs font-medium md:text-sm text-slate-800"
+                        />
                     </div>
                 </div>
             </div>
