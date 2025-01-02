@@ -1,6 +1,7 @@
 import Price from "../../Components/frontend/Price";
 import { Product } from "@/types/frontend/product";
 import { Button } from "../ui/button";
+import imageNotFount from "../../../../public/images/image-not-found.jpg";
 
 function ProductCard({ product }: { product: Product }) {
     const { id, category, name, description, price, unit, stock, photos } =
@@ -8,16 +9,18 @@ function ProductCard({ product }: { product: Product }) {
     const productImage =
         product?.photos && product.photos.length > 0
             ? product.photos[0].image_url
-            : ""; // kasih alt, jika tidak ada foto product
+            : imageNotFount;
 
     return (
         <a href={`/products/${id}`}>
-            <div className="p-1 md:p-2 border-b-[1px]">
-                <img
-                    src={productImage}
-                    alt="Product photo"
-                    className="object-cover duration-200 ease-in-out transform rounded-sm shadow-sm hover:scale-105"
-                />
+            <div className="p-1 md:p-2 border-b-[1px] rounded-sm hover:outline hover:outline-1 hover:outline-slate-800 transition duration-400">
+                <div className="relative w-full aspect-[4/3] overflow-hidden rounded-sm shadow-sm">
+                    <img
+                        src={productImage}
+                        alt="Product photo"
+                        className="object-cover w-full h-full"
+                    />
+                </div>
                 <div className="py-2 space-y-2 md:space-y-2 md:py-3">
                     <h1 className="text-sm font-semibold leading-snug md:text-base text-slate-800 line-clamp-1">
                         {name}
