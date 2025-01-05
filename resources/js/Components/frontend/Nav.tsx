@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useCartContext } from "@/context/Store";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import { Input } from "../../Components/ui/input";
-import { SearchInput } from "./SearchInput";
 import { NavItem } from "./NavItem";
 import NavbarMobile from "./NavbarMobile";
 
