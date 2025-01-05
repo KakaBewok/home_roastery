@@ -1,8 +1,5 @@
 "use client";
 
-import { AlignJustify } from "lucide-react";
-import { MainNav } from "./MainNav";
-
 const NavbarMobile = () => {
     return (
         // <div className="lg:hidden">
@@ -110,7 +107,7 @@ const NavbarMobile = () => {
                             href="#"
                             className="flex flex-col items-center text-gray-600 hover:text-blue-500"
                         >
-                            {/* <svg
+                            <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -123,35 +120,7 @@ const NavbarMobile = () => {
                                     strokeLinejoin="round"
                                     d="M6 18L18 6M6 6l12 12"
                                 />
-                            </svg> */}
-                            <div className="dropdown dropdown-top">
-                                <div
-                                    tabIndex={0}
-                                    role="button"
-                                    className="btn btn-ghost btn-circle avatar"
-                                >
-                                    <div className="w-10 rounded-full">
-                                        <img
-                                            alt="Tailwind CSS Navbar component"
-                                            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                                        />
-                                    </div>
-                                </div>
-                                <ul
-                                    tabIndex={0}
-                                    className="menu menu-sm dropdown-content bg-white rounded-box z-[1] mt-3 w-40 p-2 shadow"
-                                >
-                                    <li>
-                                        <a>Profile</a>
-                                    </li>
-                                    <li>
-                                        <a>Settings</a>
-                                    </li>
-                                    <li>
-                                        <a>Logout</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            </svg>
                             <span className="text-xs">Profile</span>
                         </a>
                     </li>

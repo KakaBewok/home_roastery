@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
+export function NavItem({ className }: React.HTMLAttributes<HTMLElement>) {
     const routes = [
         {
             href: `#portofolios`,
@@ -13,18 +13,18 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
     ];
 
     return (
-        <nav className={cn("lg:space-x-5", className)}>
+        <div className={cn("md:space-x-5", className)}>
             {routes.map((route) => (
                 <a
                     key={route.href}
                     href={route.href}
                     className={
-                        "ml-4 text-sm font-medium hover:transition-opacity hover:duration-300 hover:opacity-60"
+                        "text-sm font-medium hover:transition-opacity hover:duration-200 hover:opacity-70"
                     }
                 >
                     {route.label}
                 </a>
             ))}
-        </nav>
+        </div>
     );
 }
