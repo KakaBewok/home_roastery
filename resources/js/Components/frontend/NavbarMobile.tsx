@@ -22,7 +22,7 @@ const NavbarMobile = () => {
                                     d="M6 18L18 6M6 6l12 12"
                                 />
                             </svg>
-                            <span className="text-xs">New</span>
+                            <span className="text-xs">Delivery</span>
                         </a>
                     </li>
                     <li>
@@ -44,7 +44,7 @@ const NavbarMobile = () => {
                                     d="M12 7v10m5-5H7"
                                 />
                             </svg>
-                            <span className="text-xs">Delivery</span>
+                            <span className="text-xs">History</span>
                         </a>
                     </li>
                     <li>
