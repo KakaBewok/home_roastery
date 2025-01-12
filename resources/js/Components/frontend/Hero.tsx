@@ -1,11 +1,15 @@
 import { Banner } from "@/types/frontend/banner";
 import { useEffect, useState } from "react";
+import imageNotFound from "../../../../public/images/image-not-found.jpg";
 
 export const Hero = ({ banners }: { banners: Banner[] }) => {
     const [currentSlide, setCurrentSlide] = useState<number>(0);
-    const totalSlides: number = banners.length;
+    const totalSlides: number = banners == null ? 0 : banners.length;
 
-    const slideImages = banners.map((banner) => banner.banner_url);
+    const slideImages: string[] =
+        banners.length < 1 || banners == null
+            ? [imageNotFound]
+            : banners.map((banner) => banner.banner_url);
 
     // Auto-slide effect
     useEffect(() => {

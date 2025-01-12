@@ -1,60 +1,27 @@
-import StoreHeading from "../../Components/frontend/StoreHeading";
 import ProductListings from "../../Components/frontend/ProductListings";
 import { Product } from "@/types/frontend/product";
-import Layout from "@/Components/frontend/Layout";
 import { Head } from "@inertiajs/react";
 import Nav from "@/Components/frontend/Nav";
 import Footer from "@/Components/frontend/Footer";
 import { Hero } from "@/Components/frontend/Hero";
 import { Banner } from "@/types/frontend/banner";
-
-const dummyProducts: Product[] = [
-    {
-        id: "001",
-        category: {
-            name: "Arabica",
-            description: "",
-        },
-        name: "Home Roastery Special",
-        description: "",
-        price: 25000,
-        unit: "Pcs",
-        stock: 15,
-        photos: undefined,
-    },
-    {
-        id: "002",
-        category: {
-            name: "Robusta",
-            description: "Test",
-        },
-        name: "Home Roastery Biasa",
-        description: "",
-        price: 15000,
-        unit: "Pcs",
-        stock: 11,
-        photos: undefined,
-    },
-];
+import { Category } from "@/types/frontend/category";
 
 function IndexPage({
-    products,
+    categories,
     banners,
 }: {
-    products: Product[];
+    categories: Category[];
     banners: Banner[];
 }) {
     return (
-        // <Layout>
         <div className="max-w-6xl mx-auto">
             <Head title="Home" />
             <Nav />
             <Hero banners={banners} />
-            {/* <StoreHeading /> */}
-            <ProductListings products={products} />
+            <ProductListings categories={categories} />
             <Footer />
         </div>
-        // </Layout>
     );
 }
 

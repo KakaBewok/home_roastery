@@ -30,7 +30,7 @@ class BannerResource extends Resource
                     ->image()
                     ->directory('photos')
                     ->maxSize(1024)
-                    ->acceptedFileTypes(['image/jpeg', 'image/png'])
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
             ]);
     }
 
