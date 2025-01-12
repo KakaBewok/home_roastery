@@ -1,87 +1,92 @@
+import { useEffect, useState } from "react";
+
 export const Hero = () => {
+    const [currentSlide, setCurrentSlide] = useState<number>(0);
+    const totalSlides: number = 4;
+
+    const slideImages = [
+        "https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp",
+        "https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp",
+        "https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp",
+        "https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp",
+    ];
+
+    // Auto-slide effect
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prevSlide) => (prevSlide + 1) % totalSlides);
+        }, 4000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
+    // Function to navigate to previous and next slides
+    const goToPreviousSlide = () => {
+        setCurrentSlide((prevSlide) =>
+            prevSlide === 0 ? totalSlides - 1 : prevSlide - 1
+        );
+    };
+    const goToNextSlide = () => {
+        setCurrentSlide((prevSlide) => (prevSlide + 1) % totalSlides);
+    };
+
     return (
-        <div className="px-3 py-5 lg:px-0">
-            <div className="w-full rounded-lg carousel">
+        <div className="relative px-3 py-5 lg:px-0 group">
+            <div className="w-full overflow-hidden rounded-lg">
+                {/* Wrapper for sliding */}
                 <div
-                    id="slide1"
-                    className="relative w-full carousel-item group"
+                    className="flex transition-transform duration-1000 ease-in-out"
+                    style={{
+                        transform: `translateX(-${currentSlide * 100}%)`,
+                    }}
                 >
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp"
-                        className="w-full"
-                    />
-                    <div className="absolute flex justify-between transition-opacity duration-300 transform -translate-y-1/2 md:opacity-0 left-5 right-5 top-1/2 opacity-95 md:group-hover:opacity-100">
-                        <a
-                            href="#slide4"
-                            className="text-slate-300 btn btn-circle btn-xs"
+                    {slideImages.map((image, index) => (
+                        <div
+                            key={`slide${index}`}
+                            className="flex-shrink-0 w-full"
                         >
-                            ❮
-                        </a>
-                        <a href="#slide2" className="btn btn-circle btn-xs">
-                            ❯
-                        </a>
-                    </div>
+                            <img
+                                src={image}
+                                className="w-full"
+                                alt={`Slide ${index + 1}`}
+                            />
+                        </div>
+                    ))}
                 </div>
-                <div
-                    id="slide2"
-                    className="relative w-full carousel-item group"
+            </div>
+
+            {/* Manual navigation buttons */}
+            <div className="absolute flex justify-between transition-opacity duration-300 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 left-5 right-5 top-1/2">
+                <a
+                    className="text-slate-300 btn btn-circle btn-xs"
+                    onClick={goToPreviousSlide}
                 >
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp"
-                        className="w-full"
+                    ❮
+                </a>
+                <a className="btn btn-circle btn-xs" onClick={goToNextSlide}>
+                    ❯
+                </a>
+            </div>
+
+            {/* Slide indicators */}
+            <div
+                className={`${
+                    totalSlides == 1 ? "hidden" : ""
+                }flex justify-center mt-2 space-x-2 md:mt-4`}
+            >
+                {slideImages.map((_, index) => (
+                    <button
+                        key={index}
+                        className={`w-1 h-1 md:w-2 md:h-2 rounded-full ${
+                            index === currentSlide
+                                ? "bg-orange-500"
+                                : "bg-gray-300"
+                        }`}
+                        onClick={() => setCurrentSlide(index)}
                     />
-                    <div className="absolute flex justify-between transition-opacity duration-300 transform -translate-y-1/2 opacity-0 left-5 right-5 top-1/2 group-hover:opacity-100">
-                        <a
-                            href="#slide1"
-                            className="text-slate-300 btn btn-circle btn-sm"
-                        >
-                            ❮
-                        </a>
-                        <a href="#slide3" className="btn btn-circle btn-sm">
-                            ❯
-                        </a>
-                    </div>
-                </div>
-                <div
-                    id="slide3"
-                    className="relative w-full carousel-item group"
-                >
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp"
-                        className="w-full"
-                    />
-                    <div className="absolute flex justify-between transition-opacity duration-300 transform -translate-y-1/2 opacity-0 left-5 right-5 top-1/2 group-hover:opacity-100">
-                        <a
-                            href="#slide2"
-                            className="text-slate-300 btn btn-circle btn-sm"
-                        >
-                            ❮
-                        </a>
-                        <a href="#slide4" className="btn btn-circle btn-sm">
-                            ❯
-                        </a>
-                    </div>
-                </div>
-                <div
-                    id="slide4"
-                    className="relative w-full carousel-item group"
-                >
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp"
-                        className="w-full"
-                    />
-                    <div className="absolute flex justify-between transition-opacity duration-300 transform -translate-y-1/2 opacity-0 left-5 right-5 top-1/2 group-hover:opacity-100">
-                        <a
-                            href="#slide3"
-                            className="text-slate-300 btn btn-circle btn-sm"
-                        >
-                            ❮
-                        </a>
-                        <a href="#slide1" className="btn btn-circle btn-sm">
-                            ❯
-                        </a>
-                    </div>
-                </div>
+                ))}
             </div>
         </div>
     );

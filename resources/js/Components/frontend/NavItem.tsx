@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 export function NavItem({ className }: React.HTMLAttributes<HTMLElement>) {
     const routes = [
         {
-            href: `#`,
+            href: `#1`,
             label: "History",
         },
         {
-            href: `#`,
+            href: `#2`,
             label: "Delivery",
         },
     ];

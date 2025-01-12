@@ -13,7 +13,7 @@ function ProductCard({ product }: { product: Product }) {
 
     return (
         <a href={`/products/${id}`}>
-            <div className="p-1 md:p-2 border-b-[1px] rounded-sm hover:opacity hover:opacity-55 transition duration-400">
+            <div className="p-1 md:p-2 border-b-[1px] rounded-sm hover:opacity hover:opacity-70 transition duration-400">
                 <div className="relative w-full aspect-[4/3] overflow-hidden rounded-sm shadow-sm">
                     <img
                         src={productImage}
