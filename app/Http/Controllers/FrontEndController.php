@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Product;
 use Inertia\Inertia;
 
@@ -10,10 +11,11 @@ class FrontEndController extends Controller
     public function index()
     {
         $products = Product::all();
-        // $category = $product->category;
-        // $photos = $product->photos;
+        $banners = Banner::all();
+
         return Inertia::render('frontend/index', [
-            'products' => $products
+            'products' => $products,
+            'banners' => $banners
         ]);
     }
 }

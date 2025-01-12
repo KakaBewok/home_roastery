@@ -1,15 +1,11 @@
+import { Banner } from "@/types/frontend/banner";
 import { useEffect, useState } from "react";
 
-export const Hero = () => {
+export const Hero = ({ banners }: { banners: Banner[] }) => {
     const [currentSlide, setCurrentSlide] = useState<number>(0);
-    const totalSlides: number = 4;
+    const totalSlides: number = banners.length;
 
-    const slideImages = [
-        "https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp",
-        "https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp",
-        "https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp",
-        "https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp",
-    ];
+    const slideImages = banners.map((banner) => banner.banner_url);
 
     // Auto-slide effect
     useEffect(() => {
@@ -48,8 +44,10 @@ export const Hero = () => {
                             className="flex-shrink-0 w-full"
                         >
                             <img
-                                src={image}
-                                className="w-full"
+                                src={`${
+                                    import.meta.env.VITE_APP_URL
+                                }/storage/${image}`}
+                                className="object-cover w-full h-64"
                                 alt={`Slide ${index + 1}`}
                             />
                         </div>
@@ -58,7 +56,11 @@ export const Hero = () => {
             </div>
 
             {/* Manual navigation buttons */}
-            <div className="absolute flex justify-between transition-opacity duration-300 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 left-5 right-5 top-1/2">
+            <div
+                className={`${
+                    totalSlides == 1 ? "hidden" : ""
+                } absolute flex justify-between transition-opacity duration-300 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 left-5 right-5 top-1/2`}
+            >
                 <a
                     className="text-slate-300 btn btn-circle btn-xs"
                     onClick={goToPreviousSlide}
@@ -74,7 +76,7 @@ export const Hero = () => {
             <div
                 className={`${
                     totalSlides == 1 ? "hidden" : ""
-                }flex justify-center mt-2 space-x-2 md:mt-4`}
+                } flex justify-center mt-2 space-x-2 md:mt-4`}
             >
                 {slideImages.map((_, index) => (
                     <button

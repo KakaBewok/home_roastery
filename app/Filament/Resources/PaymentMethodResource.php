@@ -78,16 +78,6 @@ class PaymentMethodResource extends Resource
             ]);
     }
 
-    // protected $fillable = [
-    //     'name',
-    //     'bank_name',
-    //     'bank_logo',
-    //     'account_number',
-    //     'account_holder',
-    //     'qr_image',
-    //     'status'
-    // ];
-
     public static function getRelations(): array
     {
         return [

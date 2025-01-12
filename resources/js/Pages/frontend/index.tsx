@@ -6,6 +6,7 @@ import { Head } from "@inertiajs/react";
 import Nav from "@/Components/frontend/Nav";
 import Footer from "@/Components/frontend/Footer";
 import { Hero } from "@/Components/frontend/Hero";
+import { Banner } from "@/types/frontend/banner";
 
 const dummyProducts: Product[] = [
     {
@@ -36,13 +37,19 @@ const dummyProducts: Product[] = [
     },
 ];
 
-function IndexPage({ products }: { products: Product[] }) {
+function IndexPage({
+    products,
+    banners,
+}: {
+    products: Product[];
+    banners: Banner[];
+}) {
     return (
         // <Layout>
         <div className="max-w-6xl mx-auto">
             <Head title="Home" />
             <Nav />
-            <Hero />
+            <Hero banners={banners} />
             {/* <StoreHeading /> */}
             <ProductListings products={products} />
             <Footer />

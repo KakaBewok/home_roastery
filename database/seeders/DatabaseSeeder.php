@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Cart;
+use App\Models\Banner;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Order;
@@ -37,6 +38,7 @@ class DatabaseSeeder extends Seeder
         //Shipping -5 
         //Payment -5 
 
+        Banner::factory(5)->create();
         User::create([
             'name' => 'Super Admin',
             'email' => 'super.admin@gmail.com',
