@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import Loading from "./Loading";
 
-function ProductListings({ categories }: { categories: Category[] }) {
+function ProductsListing({ categories }: { categories: Category[] }) {
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -46,17 +46,26 @@ function ProductListings({ categories }: { categories: Category[] }) {
                                 <h2 className="mb-4 text-lg font-bold text-orange-600 lg:text-2xl">
                                     {category.name}
                                 </h2>
-                                <Button
-                                    variant={"ghost"}
-                                    onClick={() => toggleViewAll(category.id)}
-                                    className={`${
-                                        isExpanded
-                                            ? "bg-orange-600 text-orange-100 hover:bg-orange-600 hover:text-orange-200"
-                                            : "text-orange-600 bg-orange-100 hover:bg-orange-200 hover:text-orange-600"
-                                    } px-3 py-1 text-xs md:px-4 md:py-2 md:text-sm font-medium rounded`}
-                                >
-                                    {isExpanded ? "Show Less" : "View All"}
-                                </Button>
+                                {
+                                    // show view all button if products are more than 4
+                                    category.products.length > 4 && (
+                                        <Button
+                                            variant={"ghost"}
+                                            onClick={() =>
+                                                toggleViewAll(category.id)
+                                            }
+                                            className={`${
+                                                isExpanded
+                                                    ? "bg-orange-600 text-orange-100 hover:bg-orange-600 hover:text-orange-200"
+                                                    : "text-orange-600 bg-orange-100 hover:bg-orange-200 hover:text-orange-600"
+                                            } px-3 py-1 text-xs md:px-4 md:py-2 md:text-sm font-medium rounded`}
+                                        >
+                                            {isExpanded
+                                                ? "Show Less"
+                                                : "View All"}
+                                        </Button>
+                                    )
+                                }
                             </div>
 
                             {/* products list */}
@@ -70,14 +79,16 @@ function ProductListings({ categories }: { categories: Category[] }) {
                                     </div>
                                 ) : (
                                     (isExpanded
-                                        ? category.products
-                                        : category.products.slice(0, 4)
-                                    ).map((product, index) => (
-                                        <ProductCard
-                                            key={index}
-                                            product={product}
-                                        />
-                                    ))
+                                        ? [...category.products]
+                                        : [...category.products.slice(0, 4)]
+                                    )
+                                        .sort((a, b) => a.price - b.price)
+                                        .map((product, index) => (
+                                            <ProductCard
+                                                key={index}
+                                                product={product}
+                                            />
+                                        ))
                                 )}
                             </div>
                         </div>
@@ -88,4 +99,4 @@ function ProductListings({ categories }: { categories: Category[] }) {
     );
 }
 
-export default ProductListings;
+export default ProductsListing;

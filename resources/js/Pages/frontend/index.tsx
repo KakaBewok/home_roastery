@@ -1,4 +1,4 @@
-import ProductListings from "../../Components/frontend/ProductListings";
+import ProductsListing from "../../Components/frontend/ProductsListing";
 import { Product } from "@/types/frontend/product";
 import { Head } from "@inertiajs/react";
 import Nav from "@/Components/frontend/Nav";
@@ -19,7 +19,7 @@ function IndexPage({
             <Head title="Home" />
             <Nav />
             <Hero banners={banners} />
-            <ProductListings categories={categories} />
+            <ProductsListing categories={categories} />
             <Footer />
         </div>
     );
