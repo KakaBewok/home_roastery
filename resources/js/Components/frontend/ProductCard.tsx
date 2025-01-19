@@ -24,7 +24,7 @@ function ProductCard({ product }: { product: Product }) {
                     />
                 </div>
                 <div className="py-2 space-y-3 md:space-y-3 md:py-3">
-                    <h1 className="text-sm font-semibold leading-snug md:text-base text-slate-800 line-clamp-1">
+                    <h1 className="text-sm font-semibold leading-snug text-orange-600 md:text-lg line-clamp-1">
                         {name}
                     </h1>
                     <p className="text-xs font-light text-slate-500 line-clamp-2 min-h-8">
@@ -41,7 +41,7 @@ function ProductCard({ product }: { product: Product }) {
                         <Price
                             currency="Rp. "
                             nominal={price}
-                            className="text-xs font-medium md:text-sm text-slate-800"
+                            className="text-xs font-semibold text-orange-600 md:text-lg"
                         />
                     </div>
                 </div>
