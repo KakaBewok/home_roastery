@@ -1,10 +1,11 @@
 import ProductCard from "./ProductCard";
 import { Category } from "@/types/frontend/category";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import Loading from "./Loading";
 import FilterChip from "./FilterChip";
 import { Product } from "@/types/frontend/product";
+import { SearchContext } from "@/context/SearchContext";
 
 function ProductsListing({
     categories,
@@ -13,10 +14,9 @@ function ProductsListing({
     categories: Category[];
     products: Product[];
 }) {
-    console.log(products);
+    const { searchTerm } = useContext(SearchContext) || { searchTerm: "" };
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    //
     const [activeFilters, setActiveFilters] = useState<string[]>([]);
     const handleSelectFilter = (category: string) => {
         if (!activeFilters.includes(category)) {
@@ -27,8 +27,13 @@ function ProductsListing({
             );
         }
     };
+
+    // filters and search products
     const filteredItems = categories.filter((category) =>
         activeFilters.includes(category.name)
+    );
+    products = products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const toggleViewAll = (categoryId: string) => {

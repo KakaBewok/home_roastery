@@ -1,11 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useCartContext } from "@/context/Store";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { NavItem } from "./NavItem";
 import NavbarMobile from "./NavbarMobile";
+import { SearchContext } from "@/context/SearchContext";
 
 function Nav() {
+    const searchContext = useContext(SearchContext);
+    if (!searchContext) {
+        throw new Error("SearchContext must be used within a SearchProvider");
+    }
+    const { searchTerm, setSearchTerm } = searchContext;
+
     // const cart = useCartContext()[0];
     const [cartItems, setCartItems] = useState(0);
 
@@ -30,6 +37,8 @@ function Nav() {
                             type="text"
                             className="w-full border-none outline-none focus:outline-none focus:ring-0"
                             placeholder="Search product"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

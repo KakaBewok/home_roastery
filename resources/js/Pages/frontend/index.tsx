@@ -6,6 +6,7 @@ import Footer from "@/Components/frontend/Footer";
 import { Hero } from "@/Components/frontend/Hero";
 import { Banner } from "@/types/frontend/banner";
 import { Category } from "@/types/frontend/category";
+import { SearchProvider } from "@/context/SearchContext";
 
 function IndexPage({
     categories,
@@ -17,13 +18,15 @@ function IndexPage({
     products: Product[];
 }) {
     return (
-        <div className="max-w-6xl mx-auto">
-            <Head title="Home" />
-            <Nav />
-            <Hero banners={banners} />
-            <ProductsListing categories={categories} products={products} />
-            <Footer />
-        </div>
+        <SearchProvider>
+            <div className="max-w-6xl mx-auto">
+                <Head title="Home" />
+                <Nav />
+                <Hero banners={banners} />
+                <ProductsListing categories={categories} products={products} />
+                <Footer />
+            </div>
+        </SearchProvider>
     );
 }
 

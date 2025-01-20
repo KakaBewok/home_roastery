@@ -21,7 +21,7 @@ const FilterChip: React.FC<FilterChipProps> = ({
             }`}
             onClick={() => onSelect && onSelect(label)}
         >
-            <p className="text-xs font-medium ">{label}</p>
+            <p className="text-xs font-medium md:text-sm ">{label}</p>
         </div>
     );
 };
