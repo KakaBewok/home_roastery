@@ -66,5 +66,10 @@ export default {
         },
     },
 
-    plugins: [forms, require("tailwindcss-animate"), require("daisyui")],
+    plugins: [
+        forms,
+        require("tailwindcss-animate"),
+        require("daisyui"),
+        require("tailwind-scrollbar-hide"),
+    ],
 };

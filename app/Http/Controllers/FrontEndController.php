@@ -10,12 +10,21 @@ class FrontEndController extends Controller
 {
     public function index()
     {
-        $categories = Category::with('products')->get();
-        $banners = Banner::all();
+        $categories = Category::with('products')
+            ->withCount('products')
+            ->orderBy('products_count', 'desc')
+            ->has('products')
+            ->get();
+
+        $products = $categories->flatMap->products;
+
+        $banners = Banner::orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('frontend/index', [
             'categories' => $categories,
             'banners' => $banners,
+            'products' => $products,
         ]);
     }
 }

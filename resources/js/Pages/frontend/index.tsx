@@ -10,16 +10,18 @@ import { Category } from "@/types/frontend/category";
 function IndexPage({
     categories,
     banners,
+    products,
 }: {
     categories: Category[];
     banners: Banner[];
+    products: Product[];
 }) {
     return (
         <div className="max-w-6xl mx-auto">
             <Head title="Home" />
             <Nav />
             <Hero banners={banners} />
-            <ProductsListing categories={categories} />
+            <ProductsListing categories={categories} products={products} />
             <Footer />
         </div>
     );

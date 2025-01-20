@@ -4,12 +4,9 @@ import { Button } from "../ui/button";
 import imageNotFound from "../../../../public/images/image-not-found.jpg";
 
 function ProductCard({ product }: { product: Product }) {
-    const { id, category, name, description, price, unit, stock, photos } =
-        product;
+    const { id, name, description, price, photos } = product;
     const productImage =
-        product?.photos && product.photos.length > 0
-            ? product.photos[0].image_url
-            : imageNotFound;
+        photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
 
     return (
         <a href={`/products/${id}`}>

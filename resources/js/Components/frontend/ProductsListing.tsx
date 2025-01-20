@@ -4,26 +4,32 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import Loading from "./Loading";
 import FilterChip from "./FilterChip";
+import { Product } from "@/types/frontend/product";
 
-function ProductsListing({ categories }: { categories: Category[] }) {
+function ProductsListing({
+    categories,
+    products,
+}: {
+    categories: Category[];
+    products: Product[];
+}) {
+    console.log(products);
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-
-    // --- //
+    //
     const [activeFilters, setActiveFilters] = useState<string[]>([]);
     const handleSelectFilter = (category: string) => {
         if (!activeFilters.includes(category)) {
             setActiveFilters([...activeFilters, category]);
+        } else {
+            setActiveFilters(
+                activeFilters.filter((filter) => filter !== category)
+            );
         }
     };
-    const handleRemoveFilter = (category: string) => {
-        setActiveFilters(activeFilters.filter((filter) => filter !== category));
-    };
-
-    const filteredProducts = activeFilters.length
-        ? categories.filter((category) => activeFilters.includes(category.name))
-        : categories;
-    // --- //
+    const filteredItems = categories.filter((category) =>
+        activeFilters.includes(category.name)
+    );
 
     const toggleViewAll = (categoryId: string) => {
         setExpandedCategories((prev) =>
@@ -49,36 +55,52 @@ function ProductsListing({ categories }: { categories: Category[] }) {
 
     return (
         <div className="container py-8 mx-auto">
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex gap-2 px-3 overflow-x-auto mb-14 scrollbar-hide">
                 {categories.map((category) => (
                     <FilterChip
                         key={category.id}
                         label={category.name}
                         selected={activeFilters.includes(category.name)}
                         onSelect={handleSelectFilter}
-                        onRemove={handleRemoveFilter}
                     />
                 ))}
             </div>
             {categories == null || categories.length < 1 ? (
                 <div className="flex items-center justify-center h-40">
-                    <p className="text-lg text-gray-800">No category found!</p>
+                    <p className="text-lg text-gray-800">No product found!</p>
+                </div>
+            ) : filteredItems == null || filteredItems.length < 1 ? (
+                // show all products, if filters empty
+                <div className="grid grid-cols-2 gap-3 px-3 md:px-5 lg:px-0 md:gap-4 lg:gap-8 md:grid-cols-3 lg:grid-cols-4">
+                    {products == null || products.length < 1 ? (
+                        <div className="flex items-center justify-center h-40">
+                            <p className="text-lg text-gray-800">
+                                No product found!
+                            </p>
+                        </div>
+                    ) : (
+                        products
+                            .sort((a, b) => a.price - b.price)
+                            .map((product, index) => (
+                                <ProductCard key={index} product={product} />
+                            ))
+                    )}
                 </div>
             ) : (
-                filteredProducts.map((category: Category) => {
+                filteredItems.map((category: Category) => {
                     const isExpanded = expandedCategories.includes(category.id);
 
                     return (
                         <div key={category.id} className="mb-11">
                             <div className="flex items-center justify-between px-3 mb-4">
                                 <div className="flex items-center justify-center px-4 py-2 mb-4 bg-orange-100 rounded-badge">
-                                    <h2 className="text-lg font-bold text-orange-600 lg:text-2xl">
+                                    <h2 className="text-lg font-bold text-orange-600 lg:text-xl">
                                         {category.name}
                                     </h2>
                                 </div>
                                 {
-                                    // show view all button if products are more than 4
-                                    category.products.length > 4 && (
+                                    // show view all button if products are more than 10
+                                    category.products.length > 10 && (
                                         <Button
                                             variant={"ghost"}
                                             onClick={() =>
@@ -110,7 +132,7 @@ function ProductsListing({ categories }: { categories: Category[] }) {
                                 ) : (
                                     (isExpanded
                                         ? [...category.products]
-                                        : [...category.products.slice(0, 4)]
+                                        : [...category.products.slice(0, 10)]
                                     )
                                         .sort((a, b) => a.price - b.price)
                                         .map((product, index) => (
