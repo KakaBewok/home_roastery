@@ -6,6 +6,13 @@ import Loading from "./Loading";
 import FilterChip from "./FilterChip";
 import { Product } from "@/types/frontend/product";
 import { SearchContext } from "@/context/SearchContext";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
 
 function ProductsListing({
     categories,
@@ -18,6 +25,7 @@ function ProductsListing({
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [activeFilters, setActiveFilters] = useState<string[]>([]);
+    const [sortBy, setSortBy] = useState<string>("");
     const handleSelectFilter = (category: string) => {
         if (!activeFilters.includes(category)) {
             setActiveFilters([...activeFilters, category]);
@@ -27,15 +35,6 @@ function ProductsListing({
             );
         }
     };
-
-    // filters and search products
-    const filteredItems = categories.filter((category) =>
-        activeFilters.includes(category.name)
-    );
-    products = products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
     const toggleViewAll = (categoryId: string) => {
         setExpandedCategories((prev) =>
             prev.includes(categoryId)
@@ -43,6 +42,42 @@ function ProductsListing({
                 : [...prev, categoryId]
         );
     };
+
+    // filters and search products
+    const filteredItems = categories.filter((category) =>
+        activeFilters.includes(category.name)
+    );
+    const searchItems = products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const sortedProducts = searchItems.sort((a, b) => {
+        if (sortBy === "name-asc") return a.name.localeCompare(b.name); // Sort nama A-Z
+        if (sortBy === "name-desc") return b.name.localeCompare(a.name); // Sort nama Z-A
+        if (sortBy === "price-asc") return a.price - b.price; // Sort harga rendah ke tinggi
+        if (sortBy === "price-desc") return b.price - a.price; // Sort harga tinggi ke rendah
+        return a.price - b.price;
+    });
+
+    // Tahap 1: Filter berdasarkan chip
+    // const filteredItems = products.filter((product) =>
+    //     activeFilters.length > 0
+    //         ? activeFilters.includes(product.category)
+    //         : true
+    // );
+
+    // Tahap 2: Filter berdasarkan pencarian
+    // const searchItems = filteredItems.filter((product) =>
+    //     product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
+
+    // Tahap 3: Sort berdasarkan pilihan
+    // const sortedProducts = searchItems.sort((a, b) => {
+    //     if (sortBy === "name-asc") return a.name.localeCompare(b.name); // Sort nama A-Z
+    //     if (sortBy === "name-desc") return b.name.localeCompare(a.name); // Sort nama Z-A
+    //     if (sortBy === "price-asc") return a.price - b.price; // Sort harga rendah ke tinggi
+    //     if (sortBy === "price-desc") return b.price - a.price; // Sort harga tinggi ke rendah
+    //     return 0; // Default: Tidak ada pengurutan
+    // });
 
     useEffect(() => {
         if (categories.length > 0) {
@@ -60,16 +95,37 @@ function ProductsListing({
 
     return (
         <div className="container py-8 mx-auto">
-            <div className="flex gap-2 px-3 overflow-x-auto mb-14 scrollbar-hide">
-                {categories.map((category) => (
-                    <FilterChip
-                        key={category.id}
-                        label={category.name}
-                        selected={activeFilters.includes(category.name)}
-                        onSelect={handleSelectFilter}
-                    />
-                ))}
+            <div className="flex items-center justify-between w-full px-3 mb-14">
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                    {categories.map((category) => (
+                        <FilterChip
+                            key={category.id}
+                            label={category.name}
+                            selected={activeFilters.includes(category.name)}
+                            onSelect={handleSelectFilter}
+                        />
+                    ))}
+                </div>
+                <Select
+                    value={sortBy}
+                    onValueChange={(value) => setSortBy(value)}
+                >
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                        <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                        <SelectItem value="price-asc">
+                            Price (Low to High)
+                        </SelectItem>
+                        <SelectItem value="price-desc">
+                            Price (High to Low)
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
+
             {categories == null || categories.length < 1 ? (
                 <div className="flex items-center justify-center h-40">
                     <p className="text-lg text-gray-800">No product found!</p>
@@ -77,18 +133,16 @@ function ProductsListing({
             ) : filteredItems == null || filteredItems.length < 1 ? (
                 // show all products, if filters empty
                 <div className="grid grid-cols-2 gap-3 px-3 md:px-5 lg:px-0 md:gap-4 lg:gap-8 md:grid-cols-3 lg:grid-cols-4">
-                    {products == null || products.length < 1 ? (
+                    {sortedProducts == null || sortedProducts.length < 1 ? (
                         <div className="flex items-center justify-center h-40">
                             <p className="text-lg text-gray-800">
                                 No product found!
                             </p>
                         </div>
                     ) : (
-                        products
-                            .sort((a, b) => a.price - b.price)
-                            .map((product, index) => (
-                                <ProductCard key={index} product={product} />
-                            ))
+                        sortedProducts.map((product, index) => (
+                            <ProductCard key={index} product={product} />
+                        ))
                     )}
                 </div>
             ) : (
