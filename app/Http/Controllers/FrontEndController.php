@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\Product;
 use Inertia\Inertia;
 
 class FrontEndController extends Controller
@@ -11,12 +12,10 @@ class FrontEndController extends Controller
     public function index()
     {
         $categories = Category::with('products')
-            ->withCount('products')
-            ->orderBy('products_count', 'desc')
             ->has('products')
             ->get();
 
-        $products = $categories->flatMap->products;
+        $products = Product::with('category.products')->get();
 
         $banners = Banner::orderBy('created_at', 'desc')
             ->get();

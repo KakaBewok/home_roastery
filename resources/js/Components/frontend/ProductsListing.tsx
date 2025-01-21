@@ -13,6 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
+import { groupBy } from "lodash";
 
 function ProductsListing({
     categories,
@@ -21,11 +22,14 @@ function ProductsListing({
     categories: Category[];
     products: Product[];
 }) {
+    // states
     const { searchTerm } = useContext(SearchContext) || { searchTerm: "" };
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [activeFilters, setActiveFilters] = useState<string[]>([]);
     const [sortBy, setSortBy] = useState<string>("");
+
+    // methods
     const handleSelectFilter = (category: string) => {
         if (!activeFilters.includes(category)) {
             setActiveFilters([...activeFilters, category]);
@@ -43,47 +47,32 @@ function ProductsListing({
         );
     };
 
-    // filters and search products
-    const filteredItems = categories.filter((category) =>
-        activeFilters.includes(category.name)
+    // filters & sorting
+    const filteredItems = products.filter((product) =>
+        activeFilters.length > 0
+            ? activeFilters.includes(product.category.name)
+            : true
     );
-    const searchItems = products.filter((product) =>
+    const searchItems = filteredItems.filter((product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const sortedProducts = searchItems.sort((a, b) => {
-        if (sortBy === "name-asc") return a.name.localeCompare(b.name); // Sort nama A-Z
-        if (sortBy === "name-desc") return b.name.localeCompare(a.name); // Sort nama Z-A
-        if (sortBy === "price-asc") return a.price - b.price; // Sort harga rendah ke tinggi
-        if (sortBy === "price-desc") return b.price - a.price; // Sort harga tinggi ke rendah
+        if (sortBy === "name-asc") return a.name.localeCompare(b.name);
+        if (sortBy === "name-desc") return b.name.localeCompare(a.name);
+        if (sortBy === "price-asc") return a.price - b.price;
+        if (sortBy === "price-desc") return b.price - a.price;
         return a.price - b.price;
     });
-
-    // Tahap 1: Filter berdasarkan chip
-    // const filteredItems = products.filter((product) =>
-    //     activeFilters.length > 0
-    //         ? activeFilters.includes(product.category)
-    //         : true
-    // );
-
-    // Tahap 2: Filter berdasarkan pencarian
-    // const searchItems = filteredItems.filter((product) =>
-    //     product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    // );
-
-    // Tahap 3: Sort berdasarkan pilihan
-    // const sortedProducts = searchItems.sort((a, b) => {
-    //     if (sortBy === "name-asc") return a.name.localeCompare(b.name); // Sort nama A-Z
-    //     if (sortBy === "name-desc") return b.name.localeCompare(a.name); // Sort nama Z-A
-    //     if (sortBy === "price-asc") return a.price - b.price; // Sort harga rendah ke tinggi
-    //     if (sortBy === "price-desc") return b.price - a.price; // Sort harga tinggi ke rendah
-    //     return 0; // Default: Tidak ada pengurutan
-    // });
+    const groupedProducts = groupBy(
+        sortedProducts,
+        (product: Product) => product.category.id
+    );
 
     useEffect(() => {
-        if (categories.length > 0) {
+        if (products.length > 0) {
             setLoading(false);
         }
-    }, [categories]);
+    }, [products]);
 
     if (loading) {
         return (
@@ -126,44 +115,38 @@ function ProductsListing({
                 </Select>
             </div>
 
-            {categories == null || categories.length < 1 ? (
+            {sortedProducts == null || sortedProducts.length < 1 ? (
                 <div className="flex items-center justify-center h-40">
                     <p className="text-lg text-gray-800">No product found!</p>
                 </div>
-            ) : filteredItems == null || filteredItems.length < 1 ? (
+            ) : activeFilters == null || activeFilters.length < 1 ? (
                 // show all products, if filters empty
                 <div className="grid grid-cols-2 gap-3 px-3 md:px-5 lg:px-0 md:gap-4 lg:gap-8 md:grid-cols-3 lg:grid-cols-4">
-                    {sortedProducts == null || sortedProducts.length < 1 ? (
-                        <div className="flex items-center justify-center h-40">
-                            <p className="text-lg text-gray-800">
-                                No product found!
-                            </p>
-                        </div>
-                    ) : (
-                        sortedProducts.map((product, index) => (
-                            <ProductCard key={index} product={product} />
-                        ))
-                    )}
+                    {sortedProducts.map((product, index) => (
+                        <ProductCard key={index} product={product} />
+                    ))}
                 </div>
             ) : (
-                filteredItems.map((category: Category) => {
-                    const isExpanded = expandedCategories.includes(category.id);
+                Object.entries(groupedProducts).map(
+                    ([categoryId, productsInCategory]) => {
+                        const products = productsInCategory as Product[];
+                        const category = products[0].category;
+                        const isExpanded =
+                            expandedCategories.includes(categoryId);
 
-                    return (
-                        <div key={category.id} className="mb-11">
-                            <div className="flex items-center justify-between px-3 mb-4">
-                                <div className="flex items-center justify-center px-4 py-2 mb-4 bg-orange-100 rounded-badge">
-                                    <h2 className="text-lg font-bold text-orange-600 lg:text-xl">
-                                        {category.name}
-                                    </h2>
-                                </div>
-                                {
-                                    // show view all button if products are more than 10
-                                    category.products.length > 10 && (
+                        return (
+                            <div key={categoryId} className="mb-11">
+                                <div className="flex items-center justify-between px-3 mb-4">
+                                    <div className="flex items-center justify-center px-4 py-2 mb-4 bg-orange-100 rounded-badge">
+                                        <h2 className="text-lg font-bold text-orange-600 lg:text-xl">
+                                            {category.name}
+                                        </h2>
+                                    </div>
+                                    {products.length > 4 && (
                                         <Button
                                             variant={"ghost"}
                                             onClick={() =>
-                                                toggleViewAll(category.id)
+                                                toggleViewAll(categoryId)
                                             }
                                             className={`${
                                                 isExpanded
@@ -175,36 +158,25 @@ function ProductsListing({
                                                 ? "Show Less"
                                                 : "View All"}
                                         </Button>
-                                    )
-                                }
-                            </div>
+                                    )}
+                                </div>
 
-                            {/* products list */}
-                            <div className="grid grid-cols-2 gap-3 px-3 md:px-5 lg:px-0 md:gap-4 lg:gap-8 md:grid-cols-3 lg:grid-cols-4">
-                                {category.products == null ||
-                                category.products.length < 1 ? (
-                                    <div className="flex items-center justify-center h-40">
-                                        <p className="text-lg text-gray-800">
-                                            No product found!
-                                        </p>
-                                    </div>
-                                ) : (
-                                    (isExpanded
-                                        ? [...category.products]
-                                        : [...category.products.slice(0, 10)]
-                                    )
-                                        .sort((a, b) => a.price - b.price)
-                                        .map((product, index) => (
-                                            <ProductCard
-                                                key={index}
-                                                product={product}
-                                            />
-                                        ))
-                                )}
+                                {/* Products list */}
+                                <div className="grid grid-cols-2 gap-3 px-3 md:px-5 lg:px-0 md:gap-4 lg:gap-8 md:grid-cols-3 lg:grid-cols-4">
+                                    {(isExpanded
+                                        ? products
+                                        : products.slice(0, 4)
+                                    ).map((product) => (
+                                        <ProductCard
+                                            key={product.id}
+                                            product={product}
+                                        />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    );
-                })
+                        );
+                    }
+                )
             )}
         </div>
     );
