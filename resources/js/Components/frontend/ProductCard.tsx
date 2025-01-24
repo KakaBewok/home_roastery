@@ -29,7 +29,7 @@ function ProductCard({ product }: { product: Product }) {
                     </p>
                     <div className="flex items-center justify-between">
                         <Button
-                            className="text-xs border rounded-3xl border-slate-800"
+                            className="px-2 py-1 text-xs border md:px-3 rounded-3xl border-slate-800"
                             variant="outline"
                             size="sm"
                         >

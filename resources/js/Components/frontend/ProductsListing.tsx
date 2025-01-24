@@ -15,13 +15,15 @@ import {
 } from "@/Components/ui/select";
 import { groupBy } from "lodash";
 
-function ProductsListing({
-    categories,
-    products,
-}: {
+type ProductsListingProps = {
     categories: Category[];
     products: Product[];
-}) {
+};
+
+const ProductsListing: React.FC<ProductsListingProps> = ({
+    categories,
+    products,
+}) => {
     // states
     const { searchTerm } = useContext(SearchContext) || { searchTerm: "" };
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
@@ -83,9 +85,9 @@ function ProductsListing({
     }
 
     return (
-        <div className="container py-8 mx-auto">
-            <div className="flex items-center justify-between w-full px-3 mb-14">
-                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+        <div className="container w-full py-8 mx-auto">
+            <div className="flex flex-col items-start justify-between w-full gap-5 px-3 md:items-center md:flex-row mb-14">
+                <div className="flex w-full gap-2 overflow-x-auto scrollbar-hide">
                     {categories.map((category) => (
                         <FilterChip
                             key={category.id}
@@ -136,14 +138,15 @@ function ProductsListing({
 
                         return (
                             <div key={categoryId} className="mb-11">
-                                <div className="flex items-center justify-between px-3 mb-4">
-                                    <div className="flex items-center justify-center px-4 py-2 mb-4 bg-orange-100 rounded-badge">
-                                        <h2 className="text-lg font-bold text-orange-600 lg:text-xl">
+                                <div className="flex items-center justify-between px-4 mb-4 md:px-7 lg:px-2">
+                                    <div className="flex items-center justify-center px-4 py-2 bg-orange-100 rounded-sm">
+                                        <h2 className="text-lg font-bold text-orange-600">
                                             {category.name}
                                         </h2>
                                     </div>
                                     {products.length > 4 && (
                                         <Button
+                                            size="sm"
                                             variant={"ghost"}
                                             onClick={() =>
                                                 toggleViewAll(categoryId)
@@ -180,6 +183,6 @@ function ProductsListing({
             )}
         </div>
     );
-}
+};
 
 export default ProductsListing;
