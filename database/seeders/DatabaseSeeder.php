@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Banner;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Category;
@@ -13,6 +12,8 @@ use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Photo;
 use App\Models\Product;
+use App\Models\ProductSize;
+use App\Models\Rating;
 use App\Models\Review;
 use App\Models\Shipping;
 use App\Models\User;
@@ -31,14 +32,14 @@ class DatabaseSeeder extends Seeder
         //Photo - 30 
         //Cart - 2 
         //CartItem - 5 
-        //OrderItem - 10 
-        //Review - 5 
+        //OrderItem - 10
         //Order - 5 
         //PaymentMethod - 3 
         //Shipping -5 
         //Payment -5 
+        //User - 4
+        //Banner - 5
 
-        Banner::factory(5)->create();
         User::create([
             'name' => 'Super Admin',
             'email' => 'super.admin@gmail.com',
@@ -49,6 +50,23 @@ class DatabaseSeeder extends Seeder
             'email' => 'customer@gmail.com',
             'password' => Hash::make('customer'),
         ]);
+        User::create([
+            'name' => 'Customer 2',
+            'email' => 'customer2@gmail.com',
+            'password' => Hash::make('customer2'),
+        ]);
+        User::create([
+            'name' => 'Customer 3',
+            'email' => 'customer3@gmail.com',
+            'password' => Hash::make('customer3'),
+        ]);
+        User::create([
+            'name' => 'Customer 4',
+            'email' => 'customer4@gmail.com',
+            'password' => Hash::make('customer4'),
+        ]);
+
+        Banner::factory(5)->create();
         Category::factory(3)->create();
         PaymentMethod::factory(3)->create();
         Product::factory(15)->recycle([
@@ -62,10 +80,6 @@ class DatabaseSeeder extends Seeder
         ])->create();
         CartItem::factory(5)->recycle([
             Cart::all(),
-            Product::all()
-        ])->create();
-        Review::factory(5)->recycle([
-            User::all(),
             Product::all()
         ])->create();
         Order::factory(5)->recycle([
@@ -82,5 +96,21 @@ class DatabaseSeeder extends Seeder
             Order::all(),
             PaymentMethod::all()
         ])->create();
+
+        Product::all()->each(function ($product) {
+            Rating::factory(5)->create([
+                'product_id' => $product->id,
+                'user_id' => User::inRandomOrder()->first()->id,
+            ]);
+
+            Review::factory(5)->create([
+                'product_id' => $product->id,
+                'user_id' => User::inRandomOrder()->first()->id,
+            ]);
+
+            ProductSize::factory(3)->create([
+                'product_id' => $product->id,
+            ]);
+        });
     }
 }

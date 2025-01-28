@@ -4,14 +4,22 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
+use App\Models\ProductSize;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class ProductResource extends Resource
 {
@@ -23,30 +31,33 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->required()
+                TextInput::make('name')->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('category_id')
+                Select::make('category_id')
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload()
                     ->required()
                     ->createOptionForm([
-                        Forms\Components\TextInput::make('name')->required()
+                        TextInput::make('name')->required()
                             ->maxLength(255)->label('Category'),
-                        Forms\Components\Textarea::make('description')->rows(10)
+                        Textarea::make('description')->rows(10)
                             ->cols(20),
                     ]),
-                Forms\Components\Repeater::make('sizes')
+                Repeater::make('sizes')
                     ->label('Product Sizes')
                     ->relationship('sizes')
                     ->schema([
-                        Forms\Components\TextInput::make('size')
+                        TextInput::make('size')
                             ->label('Size')
+                            ->required(),
+                        Select::make('unit')
                             ->required()
-                            ->unique('product_sizes', 'size', function ($query) {
-                                $query->where('product_id', request()->route('record'));
-                            }),
-                        Forms\Components\TextInput::make('price')
+                            ->options([
+                                'Gram' => 'Gram',
+                                'Kilogram' => 'Kilogram',
+                            ]),
+                        TextInput::make('price')
                             ->label('Price')
                             ->numeric()
                             ->required()
@@ -55,12 +66,6 @@ class ProductResource extends Resource
                             ->label('Strikethrough Price')
                             ->numeric()
                             ->minValue(0),
-                        Forms\Components\Select::make('unit')
-                            ->required()
-                            ->options([
-                                'Gram' => 'Gram',
-                                'Kilogram' => 'Kilogram',
-                            ]),
                         TextInput::make('stock')
                             ->numeric()
                             ->required()
@@ -68,10 +73,10 @@ class ProductResource extends Resource
                             ->minValue(0),
                     ])
                     ->columns(2),
-                Forms\Components\Repeater::make('photos')
+                Repeater::make('photos')
                     ->relationship('photos')
                     ->schema([
-                        Forms\Components\FileUpload::make('image_url')
+                        FileUpload::make('image_url')
                             ->label('Upload image')
                             ->image()
                             ->directory('photos')
@@ -80,7 +85,7 @@ class ProductResource extends Resource
                     ])
                     ->columns(1)
                     ->label('Product images'),
-                Forms\Components\MarkdownEditor::make('description'),
+                MarkdownEditor::make('description'),
             ]);
     }
 
@@ -88,32 +93,32 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('startingPrice')
+                TextColumn::make('starting_price')
                     ->label('Starting Price')
                     ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.')),
-                Tables\Columns\TextColumn::make('totalStock')
-                    ->label('Total Stock'),
+                TextColumn::make('total_stock')
+                    ->label('Total Stock')
             ])
             ->filters([
-                SelectFilter::make('out_of_stock')
-                    ->label('Out of Stock')
+                SelectFilter::make('is_out_of_stock')
+                    ->label('Stock Status')
                     ->options([
-                        1 => 'Out of Stock',
-                        0 => 'In Stock'
+                        'out of stock' => 'Out of Stock',
+                        'in stock' => 'In Stock'
                     ])
-                    ->query(function (Builder $query, $value) {
-                        if ($value == 1) {
-                            $query->whereHas('sizes', function (Builder $query) {
-                                $query->havingRaw('SUM(stock) = 0');
+                    ->query(function (Builder $query, array $data) {
+                        if ($data['value'] === 'out of stock') {
+                            $query->whereDoesntHave('sizes', function (Builder $query) {
+                                $query->where('stock', '>', 0);
                             });
-                        } else {
+                        } elseif ($data['value'] === 'in stock') {
                             $query->whereHas('sizes', function (Builder $query) {
-                                $query->havingRaw('SUM(stock) > 0');
+                                $query->where('stock', '>', 0);
                             });
                         }
-                    }),
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

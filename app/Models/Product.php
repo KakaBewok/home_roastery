@@ -37,6 +37,21 @@ class Product extends Model
                 }
             }
         });
+
+        self::saving(static function (Product $product): void {
+            $sizes = $product->sizes;
+            $sizeUnitPairs = [];
+
+            foreach ($sizes as $size) {
+                $sizeUnit = $size->size . '-' . $size->unit;
+
+                if (in_array($sizeUnit, $sizeUnitPairs)) {
+                    throw new \Exception('Duplicate size and unit combination are not allowed.');
+                }
+
+                $sizeUnitPairs[] = $sizeUnit;
+            }
+        });
     }
 
     public function category(): BelongsTo
@@ -74,22 +89,22 @@ class Product extends Model
         return $this->hasMany(ProductSize::class);
     }
 
-    public function averageRating()
+    public function getAverageRatingAttribute()
     {
         return $this->ratings()->avg('rating');
     }
 
-    public function startingPrice()
+    public function getStartingPriceAttribute()
     {
         return $this->sizes()->min('price');
     }
 
-    public function totalStock()
+    public function getTotalStockAttribute()
     {
         return $this->sizes()->sum('stock');
     }
 
-    public function isOutOfStock()
+    public function getIsOutOfStockAttribute()
     {
         return $this->sizes()->sum('stock') === 0;
     }
