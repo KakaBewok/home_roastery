@@ -7,8 +7,7 @@ use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\Photo;
 use App\Models\Review;
-use App\Observers\ProductObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use App\Models\ProductSize;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,9 +22,6 @@ class Product extends Model
         'category_id',
         'name',
         'description',
-        'price',
-        'unit',
-        'stock',
     ];
 
     protected $with = ['photos', 'category'];
@@ -53,11 +49,6 @@ class Product extends Model
         return $this->hasMany(Photo::class);
     }
 
-    public function reviews(): HasMany
-    {
-        return $this->hasMany(Review::class);
-    }
-
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);
@@ -66,5 +57,40 @@ class Product extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function sizes()
+    {
+        return $this->hasMany(ProductSize::class);
+    }
+
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating');
+    }
+
+    public function startingPrice()
+    {
+        return $this->sizes()->min('price');
+    }
+
+    public function totalStock()
+    {
+        return $this->sizes()->sum('stock');
+    }
+
+    public function isOutOfStock()
+    {
+        return $this->sizes()->sum('stock') === 0;
     }
 }
