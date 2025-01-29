@@ -4,8 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
-use App\Models\ProductSize;
-use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
@@ -19,7 +17,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
 
 class ProductResource extends Resource
 {
@@ -92,14 +89,26 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(
+                Product::query()
+                    ->selectRaw('
+                        products.*, 
+                        (SELECT SUM(product_sizes.stock) FROM product_sizes WHERE product_sizes.product_id = products.id) AS total_stock,
+                        (SELECT MIN(product_sizes.price) FROM product_sizes WHERE product_sizes.product_id = products.id) AS starting_price
+                    ')
+            )
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+
                 TextColumn::make('starting_price')
                     ->label('Starting Price')
-                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.')),
+                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                    ->sortable(),
+
                 TextColumn::make('total_stock')
                     ->label('Total Stock')
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('is_out_of_stock')

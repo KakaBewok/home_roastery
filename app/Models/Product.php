@@ -6,13 +6,14 @@ use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\Photo;
-use App\Models\Review;
 use App\Models\ProductSize;
+use App\Models\Review;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class Product extends Model
 {
@@ -24,7 +25,9 @@ class Product extends Model
         'description',
     ];
 
-    protected $with = ['photos', 'category'];
+    protected $with = ['photos', 'category', 'sizes'];
+
+    protected $appends = ['total_stock', 'starting_price', 'is_out_of_stock', 'average_rating'];
 
     protected static function booted(): void
     {

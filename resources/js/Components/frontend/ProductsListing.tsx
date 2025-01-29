@@ -59,11 +59,25 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const sortedProducts = searchItems.sort((a, b) => {
+        // if (sortBy === "name-asc") return a.name.localeCompare(b.name);
+        // if (sortBy === "name-desc") return b.name.localeCompare(a.name);
+        // if (sortBy === "price-asc") return a.price - b.price;
+        // if (sortBy === "price-desc") return b.price - a.price;
+        // return a.price - b.price;
+
+        // Jika sorting berdasarkan harga, pilih harga terkecil dari sizes jika ada
+        const priceA = a.sizes
+            ? Math.min(...a.sizes.map((size) => size.price))
+            : a.price;
+        const priceB = b.sizes
+            ? Math.min(...b.sizes.map((size) => size.price))
+            : b.price;
+
         if (sortBy === "name-asc") return a.name.localeCompare(b.name);
         if (sortBy === "name-desc") return b.name.localeCompare(a.name);
-        if (sortBy === "price-asc") return a.price - b.price;
-        if (sortBy === "price-desc") return b.price - a.price;
-        return a.price - b.price;
+        if (sortBy === "price-asc") return priceA - priceB;
+        if (sortBy === "price-desc") return priceB - priceA;
+        return priceA - priceB; // Default sorting by price if none specified
     });
     const groupedProducts = groupBy(
         sortedProducts,

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ProductSize extends Model
@@ -19,18 +20,20 @@ class ProductSize extends Model
         'stock'
     ];
 
-    public static function rules()
+    public static function rules($productId = null)
     {
         return [
             'size' => [
                 'required',
                 'string',
-                Rule::unique('product_sizes')->where(fn($query) => $query->where('product_id', $this->product_id)),
             ],
             'price' => 'required|numeric|min:0',
             'original_price' => 'numeric|min:0',
             'unit' => 'required|string',
-            'stock' => 'required|numeric|min:0',
+            'unit' => [
+                'required',
+                'string',
+            ]
         ];
     }
 

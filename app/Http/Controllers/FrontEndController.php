@@ -15,7 +15,7 @@ class FrontEndController extends Controller
             ->has('products')
             ->get();
 
-        $products = Product::with('category.products')->get();
+        $products = Product::with('category.products', 'sizes')->get();
 
         $banners = Banner::orderBy('created_at', 'desc')
             ->get();

@@ -7,10 +7,10 @@ interface PriceProps {
 function Price({ currency, nominal, className }: PriceProps) {
     const formattedNominal = new Intl.NumberFormat("id-ID").format(nominal);
     return (
-        <div className={className}>
+        <p className={className}>
             {currency}
             <span>{formattedNominal}</span>
-        </div>
+        </p>
     );
 }
 
