@@ -1,19 +1,13 @@
 import Price from "../../Components/frontend/Price";
 import { Product } from "@/types/frontend/product";
-import { Button } from "../ui/button";
 import imageNotFound from "../../../../public/images/image-not-found.jpg";
 import { Star } from "lucide-react";
 
 function ProductCard({ product }: { product: Product }) {
     const { name, photos, sizes, average_rating, total_stock } = product;
-    console.log(product);
+
     const productImage =
         photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
-
-    // const startingPrice =
-    //     sizes && sizes.length > 0
-    //         ? Math.min(...sizes.map((size) => size.price))
-    //         : 0;
 
     const { price: startingPrice, original_price: lowestOriginalPrice } =
         sizes && sizes.length > 0
@@ -22,9 +16,14 @@ function ProductCard({ product }: { product: Product }) {
                   sizes[0]
               )
             : { price: 0, original_price: 0 };
-    // Bulatkan average rating ke angka terdekat
+
+    const getJustifyClassForStockAndRating = () => {
+        if (roundedRating < 2) return "justify-end";
+        if (total_stock > 4) return "justify-start";
+        return "justify-between";
+    };
+
     const roundedRating = Math.ceil(average_rating || 0);
-    const rating = average_rating || 0;
 
     return (
         <a href="#" className="block overflow-hidden group">
@@ -39,30 +38,9 @@ function ProductCard({ product }: { product: Product }) {
             </div>
 
             <div className="relative pt-3 bg-white">
-                <div className="flex-col">
-                    <h3 className="text-sm text-gray-700 group-hover:underline group-hover:underline-offset-4 line-clamp-2">
-                        {name}
-                    </h3>
-                    {roundedRating > 2 && (
-                        <div className="flex items-center mt-1">
-                            {Array.from({ length: 5 }, (_, i) => (
-                                <Star
-                                    key={i}
-                                    size={16}
-                                    className={
-                                        i < roundedRating
-                                            ? "text-yellow-500"
-                                            : "text-gray-300"
-                                    }
-                                />
-                            ))}
-                            {/* <span className="ml-2 text-sm text-gray-700">
-                                {roundedRating}
-                            </span> */}
-                        </div>
-                    )}
-                </div>
-
+                <h3 className="text-sm text-gray-700 group-hover:underline group-hover:underline-offset-4 line-clamp-2">
+                    {name}
+                </h3>
                 <div className="mt-1.5 flex flex-col md:flex-row items-start md:items-center justify-between text-gray-900">
                     <div className="flex items-center justify-between gap-2 md:gap-1">
                         <Price
@@ -82,9 +60,27 @@ function ProductCard({ product }: { product: Product }) {
                             </div>
                         )}
                     </div>
-
-                    {total_stock < 4 && (
-                        <p className="text-sm font-medium tracking-wide text-red-500 md:text-base">
+                </div>
+                <div
+                    className={`flex items-center mt-1 ${getJustifyClassForStockAndRating()}`}
+                >
+                    {roundedRating > 2 && (
+                        <div className="flex items-center mt-1">
+                            {Array.from({ length: 5 }, (_, i) => (
+                                <Star
+                                    key={i}
+                                    size={16}
+                                    className={
+                                        i < roundedRating
+                                            ? "text-yellow-500"
+                                            : "text-gray-300"
+                                    }
+                                />
+                            ))}
+                        </div>
+                    )}
+                    {total_stock > 0 && total_stock < 4 && (
+                        <p className="px-3 py-1 text-sm font-medium tracking-wide text-white bg-red-600 shadow-sm blinking-text md:text-base">
                             {total_stock} Left
                         </p>
                     )}

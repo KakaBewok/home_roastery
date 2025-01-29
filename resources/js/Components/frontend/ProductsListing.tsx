@@ -59,13 +59,6 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const sortedProducts = searchItems.sort((a, b) => {
-        // if (sortBy === "name-asc") return a.name.localeCompare(b.name);
-        // if (sortBy === "name-desc") return b.name.localeCompare(a.name);
-        // if (sortBy === "price-asc") return a.price - b.price;
-        // if (sortBy === "price-desc") return b.price - a.price;
-        // return a.price - b.price;
-
-        // Jika sorting berdasarkan harga, pilih harga terkecil dari sizes jika ada
         const priceA = a.sizes
             ? Math.min(...a.sizes.map((size) => size.price))
             : a.price;
@@ -111,7 +104,7 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                         />
                     ))}
                 </div>
-                <Select
+                {/* <Select
                     value={sortBy}
                     onValueChange={(value) => setSortBy(value)}
                 >
@@ -128,7 +121,18 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                             Price (High to Low)
                         </SelectItem>
                     </SelectContent>
-                </Select>
+                </Select> */}
+                <select
+                    name="HeadlineAct"
+                    id="HeadlineAct"
+                    className="mt-1.5 w-[180px] rounded-lg border-gray-300 text-gray-700 sm:text-sm"
+                    onChange={(event) => setSortBy(event.target.value)}
+                >
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="price-asc">Price (Low to High)</option>
+                    <option value="price-desc">Price (High to Low)</option>
+                </select>
             </div>
 
             {sortedProducts == null || sortedProducts.length < 1 ? (

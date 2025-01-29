@@ -16,26 +16,8 @@ class ProductSize extends Model
         'size',
         'price',
         'original_price',
-        'unit',
         'stock'
     ];
-
-    public static function rules($productId = null)
-    {
-        return [
-            'size' => [
-                'required',
-                'string',
-            ],
-            'price' => 'required|numeric|min:0',
-            'original_price' => 'numeric|min:0',
-            'unit' => 'required|string',
-            'unit' => [
-                'required',
-                'string',
-            ]
-        ];
-    }
 
     public function product()
     {

@@ -48,12 +48,6 @@ class ProductResource extends Resource
                         TextInput::make('size')
                             ->label('Size')
                             ->required(),
-                        Select::make('unit')
-                            ->required()
-                            ->options([
-                                'Gram' => 'Gram',
-                                'Kilogram' => 'Kilogram',
-                            ]),
                         TextInput::make('price')
                             ->label('Price')
                             ->numeric()

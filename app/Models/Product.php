@@ -43,16 +43,16 @@ class Product extends Model
 
         self::saving(static function (Product $product): void {
             $sizes = $product->sizes;
-            $sizeUnitPairs = [];
+            $existSize = [];
 
             foreach ($sizes as $size) {
-                $sizeUnit = $size->size . '-' . $size->unit;
+                $newSize = $size->size;
 
-                if (in_array($sizeUnit, $sizeUnitPairs)) {
-                    throw new \Exception('Duplicate size and unit combination are not allowed.');
+                if (in_array($newSize, $existSize)) {
+                    throw new \Exception('Duplicate size are not allowed.');
                 }
 
-                $sizeUnitPairs[] = $sizeUnit;
+                $existSize[] = $newSize;
             }
         });
     }

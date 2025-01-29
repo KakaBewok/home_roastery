@@ -4,6 +4,5 @@ export interface ProductSize {
     size: string;
     price: number;
     original_price: number;
-    unit: string;
     stock: number;
 }

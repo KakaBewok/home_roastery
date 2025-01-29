@@ -39,6 +39,9 @@ class DatabaseSeeder extends Seeder
         //Payment -5 
         //User - 4
         //Banner - 5
+        //Rating - 5
+        //Review - 5
+        //ProductSize - 3
 
         User::create([
             'name' => 'Super Admin',

@@ -21,7 +21,6 @@ class ProductSizeFactory extends Factory
             'product_id' => Product::factory(),
             'price' => $this->faker->randomFloat(2, 10000, 300000),
             'original_price' => 0,
-            'unit' => $this->faker->randomElement(['Gram', 'Kilogram']),
             'stock' => $this->faker->numberBetween(1, 100),
             'size' => $this->faker->randomElement(['200', '500', '3']),
         ];
