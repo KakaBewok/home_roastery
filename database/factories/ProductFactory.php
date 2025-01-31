@@ -21,6 +21,7 @@ class ProductFactory extends Factory
             'category_id' => Category::factory(),
             'name' => $this->faker->unique()->words(2, true),
             'description' => $this->faker->sentence(15, true),
+            'is_publish' => true,
         ];
     }
 }

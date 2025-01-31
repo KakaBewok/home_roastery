@@ -10,9 +10,11 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -76,6 +78,10 @@ class ProductResource extends Resource
                     ])
                     ->columns(1)
                     ->label('Product images'),
+                Toggle::make('is_publish')
+                    ->label('Show in online store?')
+                    ->default(true)
+                    ->inline(false),
                 MarkdownEditor::make('description'),
             ]);
     }
@@ -103,6 +109,8 @@ class ProductResource extends Resource
                 TextColumn::make('total_stock')
                     ->label('Total Stock')
                     ->sortable(),
+                IconColumn::make('is_publish')
+                    ->boolean()
             ])
             ->filters([
                 SelectFilter::make('is_out_of_stock')

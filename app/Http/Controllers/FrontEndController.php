@@ -11,11 +11,19 @@ class FrontEndController extends Controller
 {
     public function index()
     {
-        $categories = Category::with('products')
-            ->has('products')
+        // $categories = Category::with('products')
+        //     ->has('products')
+        //     ->get();
+
+        $categories = Category::with(['products' => function ($query) {
+            $query->where('is_publish', true);
+        }])
+            ->whereHas('products', function ($query) {
+                $query->where('is_publish', true);
+            })
             ->get();
 
-        $products = Product::with('category.products', 'sizes')->get();
+        $products = Product::with('category.products', 'sizes')->where('is_publish', true)->get();
 
         $banners = Banner::orderBy('created_at', 'desc')
             ->get();

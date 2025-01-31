@@ -23,6 +23,7 @@ class Product extends Model
         'category_id',
         'name',
         'description',
+        'is_publish'
     ];
 
     protected $with = ['photos', 'category', 'sizes'];
