@@ -14,6 +14,7 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import { groupBy } from "lodash";
+import { Filter } from "./Filter";
 
 type ProductsListingProps = {
     categories: Category[];
@@ -61,10 +62,10 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
     const sortedProducts = searchItems.sort((a, b) => {
         const priceA = a.sizes
             ? Math.min(...a.sizes.map((size) => size.price))
-            : a.price;
+            : a.starting_price;
         const priceB = b.sizes
             ? Math.min(...b.sizes.map((size) => size.price))
-            : b.price;
+            : b.starting_price;
 
         if (sortBy === "name-asc") return a.name.localeCompare(b.name);
         if (sortBy === "name-desc") return b.name.localeCompare(a.name);
@@ -94,7 +95,7 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
     return (
         <div className="container w-full py-8 mx-auto">
             <div className="flex flex-col items-start justify-between w-full gap-5 px-3 md:items-center md:flex-row mb-14">
-                <div className="flex w-full gap-2 overflow-x-auto scrollbar-hide">
+                <div className="flex w-full gap-2 overflow-x-auto border border-red-500 md:hidden scrollbar-hide">
                     {categories.map((category) => (
                         <FilterChip
                             key={category.id}
@@ -104,36 +105,29 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                         />
                     ))}
                 </div>
-                {/* <Select
-                    value={sortBy}
-                    onValueChange={(value) => setSortBy(value)}
-                >
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                        <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                        <SelectItem value="price-asc">
-                            Price (Low to High)
-                        </SelectItem>
-                        <SelectItem value="price-desc">
-                            Price (High to Low)
-                        </SelectItem>
-                    </SelectContent>
-                </Select> */}
-                <select
-                    name="HeadlineAct"
-                    id="HeadlineAct"
-                    className="mt-1.5 w-[180px] rounded-lg border-gray-300 text-gray-700 sm:text-sm"
-                    onChange={(event) => setSortBy(event.target.value)}
-                >
-                    <option value="name-asc">Name (A-Z)</option>
-                    <option value="name-desc">Name (Z-A)</option>
-                    <option value="price-asc">Price (Low to High)</option>
-                    <option value="price-desc">Price (High to Low)</option>
-                </select>
+                <div className="flex gap-3 border border-red-500">
+                    <Filter
+                        categories={categories}
+                        selectedCategories={activeFilters}
+                        onSelect={setActiveFilters}
+                    />
+                    <select
+                        name="HeadlineAct"
+                        id="HeadlineAct"
+                        className="w-[180px] rounded-lg border-gray-300 text-gray-700 sm:text-sm"
+                        onChange={(event) => setSortBy(event.target.value)}
+                    >
+                        <option>Sort products</option>
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="price-asc">Price (Low to High)</option>
+                        <option value="price-desc">Price (High to Low)</option>
+                    </select>
+                </div>
             </div>
+            <h2 className="px-3 mb-12 text-2xl font-semibold text-left text-gray-800 md:text-3xl">
+                Every Bean Tells a Story ☕
+            </h2>
 
             {sortedProducts == null || sortedProducts.length < 1 ? (
                 <div className="flex items-center justify-center h-40">

@@ -11,10 +11,6 @@ class FrontEndController extends Controller
 {
     public function index()
     {
-        // $categories = Category::with('products')
-        //     ->has('products')
-        //     ->get();
-
         $categories = Category::with(['products' => function ($query) {
             $query->where('is_publish', true);
         }])

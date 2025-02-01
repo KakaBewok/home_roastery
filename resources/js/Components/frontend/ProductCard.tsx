@@ -33,7 +33,7 @@ function ProductCard({ product }: { product: Product }) {
                         import.meta.env.VITE_APP_URL
                     }/storage/${productImage}`}
                     alt="Product photo"
-                    className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
+                    className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-lg opacity-100 group-hover:opacity-85"
                 />
             </div>
 
