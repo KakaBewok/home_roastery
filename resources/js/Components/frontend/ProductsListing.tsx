@@ -169,8 +169,8 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                                             }
                                             className={`${
                                                 isExpanded
-                                                    ? "bg-orange-500 text-orange-100 hover:bg-orange-600 hover:text-orange-200"
-                                                    : "text-orange-500 bg-orange-100 hover:bg-orange-200 hover:text-orange-600"
+                                                    ? "bg-slate-700 text-slate-100 hover:bg-slate-800 hover:text-slate-200"
+                                                    : "text-slate-700 bg-slate-200 hover:bg-slate-300 hover:text-slate-800"
                                             } px-3 py-1 text-xs md:px-4 md:py-2 md:text-sm font-medium rounded-badge`}
                                         >
                                             {isExpanded

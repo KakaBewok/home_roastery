@@ -111,7 +111,7 @@ class ProductResource extends Resource
                     ->sortable(),
                 IconColumn::make('is_publish')
                     ->boolean()
-            ])
+            ])->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('is_out_of_stock')
                     ->label('Stock Status')

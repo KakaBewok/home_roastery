@@ -65,8 +65,8 @@ export const Filter: React.FC<FilterProps> = ({
                 <div className="z-50 group-open:absolute group-open:start-0 group-open:top-auto group-open:mt-4">
                     <div
                         className={`${
-                            isFilterActive && "bg-slate-800"
-                        } w-48 bg-white border border-gray-200 rounded-sm`}
+                            isFilterActive ? "bg-slate-800" : "bg-white"
+                        } w-48 border border-gray-200 rounded-sm`}
                     >
                         <ul className="p-4 space-y-1 border-t border-gray-200">
                             {categories.map((category) => (
