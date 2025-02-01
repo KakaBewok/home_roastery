@@ -15,6 +15,8 @@ import {
 } from "@/Components/ui/select";
 import { groupBy } from "lodash";
 import { Filter } from "./Filter";
+import { Search } from "./Search";
+import { Sort } from "./Sort";
 
 type ProductsListingProps = {
     categories: Category[];
@@ -26,7 +28,7 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
     products,
 }) => {
     // states
-    const { searchTerm } = useContext(SearchContext) || { searchTerm: "" };
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [activeFilters, setActiveFilters] = useState<string[]>([]);
@@ -95,7 +97,8 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
     return (
         <div className="container w-full py-8 mx-auto">
             <div className="flex flex-col items-start justify-between w-full gap-5 px-3 md:items-center md:flex-row mb-14">
-                <div className="flex w-full gap-2 overflow-x-auto border border-red-500 md:hidden scrollbar-hide">
+                {/* filter chips mobile*/}
+                <div className="flex w-full gap-2 overflow-x-auto md:hidden scrollbar-hide">
                     {categories.map((category) => (
                         <FilterChip
                             key={category.id}
@@ -105,24 +108,25 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                         />
                     ))}
                 </div>
-                <div className="flex gap-3 border border-red-500">
+                <Search
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    className={"hidden md:flex"}
+                />
+                <div className="flex justify-between w-full gap-3 md:w-auto">
                     <Filter
                         categories={categories}
                         selectedCategories={activeFilters}
                         onSelect={setActiveFilters}
+                        className="hidden md:flex"
                     />
-                    <select
-                        name="HeadlineAct"
-                        id="HeadlineAct"
-                        className="w-[180px] rounded-lg border-gray-300 text-gray-700 sm:text-sm"
-                        onChange={(event) => setSortBy(event.target.value)}
-                    >
-                        <option>Sort products</option>
-                        <option value="name-asc">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                        <option value="price-asc">Price (Low to High)</option>
-                        <option value="price-desc">Price (High to Low)</option>
-                    </select>
+                    <Sort sortBy={sortBy} setSortBy={setSortBy} />
+                    {/* search box mobile*/}
+                    <Search
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        className={"md:hidden flex"}
+                    />
                 </div>
             </div>
             <h2 className="px-3 mb-12 text-2xl font-semibold text-left text-gray-800 md:text-3xl">
@@ -151,8 +155,8 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                         return (
                             <div key={categoryId} className="mb-11">
                                 <div className="flex items-center justify-between px-4 mb-4 md:px-7 lg:px-2">
-                                    <div className="flex items-center justify-center px-4 py-2 bg-orange-100 rounded-sm">
-                                        <h2 className="text-lg font-bold text-orange-600">
+                                    <div className="flex items-center justify-center px-4 py-2 rounded-sm bg-slate-100">
+                                        <h2 className="text-lg font-bold md:text-xl text-slate-700">
                                             {category.name}
                                         </h2>
                                     </div>

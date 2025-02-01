@@ -31,28 +31,10 @@ function Nav() {
                     <a href="">Home Roastery</a>
                 </h1>
                 <NavItem className="hidden md:flex md:items-center" />
-                <div className="flex items-center justify-between gap-4 md:gap-3">
-                    <label className="flex items-center gap-1 px-3 bg-white input input-bordered">
-                        <input
-                            type="text"
-                            className="w-full border-none outline-none focus:outline-none focus:ring-0"
-                            placeholder="Search product"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 16 16"
-                            fill="currentColor"
-                            className="w-4 h-4 opacity-70"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
-                    </label>
+                <div className="flex items-center justify-between w-full gap-4 md:w-auto md:gap-3">
+                    <h1 className="w-full text-xl font-semibold md:hidden text-slate-800">
+                        <a href="">Home Roastery</a>
+                    </h1>
                     <div className="dropdown dropdown-end">
                         <div
                             tabIndex={0}
@@ -74,7 +56,7 @@ function Nav() {
                                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                                     />
                                 </svg>
-                                <span className="z-10 text-white bg-orange-500 border-none badge badge-sm indicator-item">
+                                <span className="z-10 text-white bg-red-500 border-none badge badge-sm indicator-item">
                                     118
                                 </span>
                             </div>

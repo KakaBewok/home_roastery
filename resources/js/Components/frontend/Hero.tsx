@@ -87,7 +87,7 @@ export const Hero = ({ banners }: { banners: Banner[] }) => {
                         key={index}
                         className={`w-1 h-1 md:w-2 md:h-2 rounded-full ${
                             index === currentSlide
-                                ? "bg-orange-500"
+                                ? "bg-slate-500"
                                 : "bg-gray-300"
                         }`}
                         onClick={() => setCurrentSlide(index)}
