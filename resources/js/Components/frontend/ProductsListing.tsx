@@ -5,7 +5,6 @@ import { Button } from "../ui/button";
 import Loading from "./Loading";
 import FilterChip from "./FilterChip";
 import { Product } from "@/types/frontend/product";
-import { SearchContext } from "@/context/SearchContext";
 import {
     Select,
     SelectContent,

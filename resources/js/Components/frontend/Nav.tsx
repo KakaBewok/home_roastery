@@ -4,15 +4,8 @@ import { useCartContext } from "@/context/Store";
 // import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { NavItem } from "./NavItem";
 import NavbarMobile from "./NavbarMobile";
-import { SearchContext } from "@/context/SearchContext";
 
 function Nav() {
-    const searchContext = useContext(SearchContext);
-    if (!searchContext) {
-        throw new Error("SearchContext must be used within a SearchProvider");
-    }
-    const { searchTerm, setSearchTerm } = searchContext;
-
     // const cart = useCartContext()[0];
     const [cartItems, setCartItems] = useState(0);
 
