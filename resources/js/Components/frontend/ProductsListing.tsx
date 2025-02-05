@@ -128,8 +128,8 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                     />
                 </div>
             </div>
-            <h2 className="px-3 mb-12 text-2xl font-semibold text-left text-gray-800 md:text-3xl">
-                Every Bean Tells a Story ☕
+            <h2 className="px-3 text-xl font-semibold text-left text-gray-800 mb-7 md:mb-12 md:text-2xl">
+                Your Coffee Journey Starts Here ☕
             </h2>
 
             {sortedProducts == null || sortedProducts.length < 1 ? (

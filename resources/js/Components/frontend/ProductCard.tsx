@@ -27,14 +27,26 @@ function ProductCard({ product }: { product: Product }) {
 
     return (
         <a href="#" className="block overflow-hidden group">
-            <div className="relative h-[300px] sm:h-[350px]">
+            <div className="relative h-[210px] md:h-[250px] lg:h-[280px]">
                 <img
                     src={`${
                         import.meta.env.VITE_APP_URL
                     }/storage/${productImage}`}
                     alt="Product photo"
-                    className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-lg opacity-100 group-hover:opacity-85"
+                    className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
                 />
+                {lowestOriginalPrice > startingPrice &&
+                    lowestOriginalPrice > 0 && (
+                        <div className="absolute top-0 left-0 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-tl-sm rounded-br-sm opacity-90 lg:text-sm">
+                            -
+                            {Math.round(
+                                ((lowestOriginalPrice - startingPrice) /
+                                    lowestOriginalPrice) *
+                                    100
+                            )}
+                            %
+                        </div>
+                    )}
             </div>
 
             <div className="relative pt-3 bg-white">
@@ -46,18 +58,20 @@ function ProductCard({ product }: { product: Product }) {
                         <Price
                             currency="Rp. "
                             nominal={startingPrice}
-                            className="text-sm font-medium tracking-wide md:text-base"
+                            className="text-sm font-semibold tracking-wide md:text-base"
                         />
                         {lowestOriginalPrice > 0 && (
-                            <div className="flex items-center">
-                                <del className="text-gray-500 opacity-60">
-                                    <Price
-                                        currency="Rp. "
-                                        nominal={lowestOriginalPrice}
-                                        className="text-xs tracking-normal md:text-sm"
-                                    />
-                                </del>
-                            </div>
+                            <>
+                                <div className="flex items-center">
+                                    <del className="text-gray-600 opacity-60">
+                                        <Price
+                                            currency="Rp. "
+                                            nominal={lowestOriginalPrice}
+                                            className="text-xs tracking-normal md:text-sm"
+                                        />
+                                    </del>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
