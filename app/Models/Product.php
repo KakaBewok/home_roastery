@@ -6,14 +6,12 @@ use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\Photo;
-use App\Models\ProductSize;
 use App\Models\Review;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 
 class Product extends Model
 {
@@ -26,7 +24,7 @@ class Product extends Model
         'is_publish'
     ];
 
-    protected $with = ['photos', 'category', 'sizes'];
+    protected $with = ['photos', 'category', 'variants'];
 
     protected $appends = ['total_stock', 'starting_price', 'is_out_of_stock', 'average_rating'];
 
@@ -43,17 +41,17 @@ class Product extends Model
         });
 
         self::saving(static function (Product $product): void {
-            $sizes = $product->sizes;
-            $existSize = [];
+            $variants = $product->variants;
+            $existVariants = [];
 
-            foreach ($sizes as $size) {
-                $newSize = $size->size;
+            foreach ($variants as $variant) {
+                $variantKey = $variant->size . '-' . $variant->color . '-' . $variant->type;
 
-                if (in_array($newSize, $existSize)) {
-                    throw new \Exception('Duplicate size are not allowed.');
+                if (in_array($variantKey, $existVariants)) {
+                    throw new \Exception('Duplicate size, color, and type combination are not allowed.');
                 }
 
-                $existSize[] = $newSize;
+                $existVariants[] = $variantKey;
             }
         });
     }
@@ -88,9 +86,9 @@ class Product extends Model
         return $this->hasMany(Review::class);
     }
 
-    public function sizes()
+    public function variants()
     {
-        return $this->hasMany(ProductSize::class);
+        return $this->hasMany(ProductVariant::class);
     }
 
     public function getAverageRatingAttribute()
@@ -100,16 +98,16 @@ class Product extends Model
 
     public function getStartingPriceAttribute()
     {
-        return $this->sizes()->min('price');
+        return $this->variants()->min('price');
     }
 
     public function getTotalStockAttribute()
     {
-        return $this->sizes()->sum('stock');
+        return $this->variants()->sum('stock');
     }
 
     public function getIsOutOfStockAttribute()
     {
-        return $this->sizes()->sum('stock') === 0;
+        return $this->variants()->sum('stock') === 0;
     }
 }

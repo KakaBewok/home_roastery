@@ -1,17 +1,10 @@
 import ProductCard from "./ProductCard";
 import { Category } from "@/types/frontend/category";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import Loading from "./Loading";
 import FilterChip from "./FilterChip";
 import { Product } from "@/types/frontend/product";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/Components/ui/select";
 import { groupBy } from "lodash";
 import { Filter } from "./Filter";
 import { Search } from "./Search";
@@ -61,11 +54,11 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const sortedProducts = searchItems.sort((a, b) => {
-        const priceA = a.sizes
-            ? Math.min(...a.sizes.map((size) => size.price))
+        const priceA = a.variants
+            ? Math.min(...a.variants.map((variant) => variant.price))
             : a.starting_price;
-        const priceB = b.sizes
-            ? Math.min(...b.sizes.map((size) => size.price))
+        const priceB = b.variants
+            ? Math.min(...b.variants.map((variant) => variant.price))
             : b.starting_price;
 
         if (sortBy === "name-asc") return a.name.localeCompare(b.name);

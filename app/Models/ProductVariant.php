@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
-class ProductSize extends Model
+class ProductVariant extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'product_id',
         'size',
+        'type',
+        'color',
         'price',
         'original_price',
         'stock'

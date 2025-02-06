@@ -4,16 +4,16 @@ import imageNotFound from "../../../../public/images/image-not-found.jpg";
 import { Star } from "lucide-react";
 
 function ProductCard({ product }: { product: Product }) {
-    const { name, photos, sizes, average_rating, total_stock } = product;
+    const { name, photos, variants, average_rating, total_stock } = product;
 
     const productImage =
         photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
 
     const { price: startingPrice, original_price: lowestOriginalPrice } =
-        sizes && sizes.length > 0
-            ? sizes.reduce(
+        variants && variants.length > 0
+            ? variants.reduce(
                   (min, size) => (size.price < min.price ? size : min),
-                  sizes[0]
+                  variants[0]
               )
             : { price: 0, original_price: 0 };
 

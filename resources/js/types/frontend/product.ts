@@ -1,6 +1,6 @@
 import { Category } from "./category";
 import { Photo } from "./photo";
-import { ProductSize } from "./productSize";
+import { ProductVariant } from "./productVariant";
 
 export interface Product {
     id: string;
@@ -8,7 +8,7 @@ export interface Product {
     name: string;
     description: string;
     photos: Photo[];
-    sizes: ProductSize[];
+    variants: ProductVariant[];
     average_rating: number;
     starting_price: number;
     total_stock: number;

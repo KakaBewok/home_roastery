@@ -43,13 +43,18 @@ class ProductResource extends Resource
                         Textarea::make('description')->rows(10)
                             ->cols(20),
                     ]),
-                Repeater::make('sizes')
-                    ->label('Product Sizes')
-                    ->relationship('sizes')
+                Repeater::make('variants')
+                    ->label('Product Variants')
+                    ->relationship('variants')
                     ->schema([
                         TextInput::make('size')
                             ->label('Size')
                             ->required(),
+                        TextInput::make('type')
+                            ->label('Type')
+                            ->required(),
+                        TextInput::make('color')
+                            ->label('Color'),
                         TextInput::make('price')
                             ->label('Price')
                             ->numeric()
@@ -93,8 +98,8 @@ class ProductResource extends Resource
                 Product::query()
                     ->selectRaw('
                         products.*, 
-                        (SELECT SUM(product_sizes.stock) FROM product_sizes WHERE product_sizes.product_id = products.id) AS total_stock,
-                        (SELECT MIN(product_sizes.price) FROM product_sizes WHERE product_sizes.product_id = products.id) AS starting_price
+                        (SELECT SUM(product_variants.stock) FROM product_variants WHERE product_variants.product_id = products.id) AS total_stock,
+                        (SELECT MIN(product_variants.price) FROM product_variants WHERE product_variants.product_id = products.id) AS starting_price
                     ')
             )
             ->columns([
@@ -121,11 +126,11 @@ class ProductResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data) {
                         if ($data['value'] === 'out of stock') {
-                            $query->whereDoesntHave('sizes', function (Builder $query) {
+                            $query->whereDoesntHave('variants', function (Builder $query) {
                                 $query->where('stock', '>', 0);
                             });
                         } elseif ($data['value'] === 'in stock') {
-                            $query->whereHas('sizes', function (Builder $query) {
+                            $query->whereHas('variants', function (Builder $query) {
                                 $query->where('stock', '>', 0);
                             });
                         }
