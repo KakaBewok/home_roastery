@@ -2,20 +2,13 @@ import Price from "../../Components/frontend/Price";
 import { Product } from "@/types/frontend/product";
 import imageNotFound from "../../../../public/images/image-not-found.jpg";
 import { Star } from "lucide-react";
+import { ProductVariant } from "@/types/frontend/productVariant";
 
 function ProductCard({ product }: { product: Product }) {
     const { name, photos, variants, average_rating, total_stock } = product;
-
+    const roundedRating = Math.ceil(average_rating || 0);
     const productImage =
         photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
-
-    const { price: startingPrice, original_price: lowestOriginalPrice } =
-        variants && variants.length > 0
-            ? variants.reduce(
-                  (min, size) => (size.price < min.price ? size : min),
-                  variants[0]
-              )
-            : { price: 0, original_price: 0 };
 
     const getJustifyClassForStockAndRating = () => {
         if (roundedRating < 2) return "justify-end";
@@ -23,7 +16,30 @@ function ProductCard({ product }: { product: Product }) {
         return "justify-between";
     };
 
-    const roundedRating = Math.ceil(average_rating || 0);
+    const filterVariants = (variants: ProductVariant[]) => {
+        if (!variants || variants.length === 0)
+            return { price: 0, original_price: 0 };
+
+        const discountedVariants = variants.filter(
+            (variant) => variant.original_price > variant.price
+        );
+
+        return discountedVariants.length > 0
+            ? discountedVariants.reduce(
+                  (maxDiscount, current) =>
+                      current.original_price - current.price >
+                      maxDiscount.original_price - maxDiscount.price
+                          ? current
+                          : maxDiscount,
+                  discountedVariants[0]
+              )
+            : variants.reduce(
+                  (min, current) => (current.price < min.price ? current : min),
+                  variants[0]
+              );
+    };
+    const { price: startingPrice, original_price: lowestOriginalPrice } =
+        filterVariants(variants);
 
     return (
         <a href="#" className="block overflow-hidden group">
@@ -53,7 +69,7 @@ function ProductCard({ product }: { product: Product }) {
                 <h3 className="text-sm text-gray-700 group-hover:underline group-hover:underline-offset-4 line-clamp-2">
                     {name}
                 </h3>
-                <div className="mt-1.5 flex flex-col md:flex-row items-start md:items-center justify-between text-gray-900">
+                <div className="mt-[1px] md:mt-[2px] flex flex-col md:flex-row items-start md:items-center justify-between text-gray-900">
                     <div className="flex items-center justify-between gap-2 md:gap-1">
                         <Price
                             currency="Rp. "

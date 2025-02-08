@@ -70,7 +70,7 @@ class ProductResource extends Resource
                             ->label('Stock')
                             ->minValue(0),
                     ])
-                    ->columns(2),
+                    ->columns(2)->required(),
                 Repeater::make('photos')
                     ->relationship('photos')
                     ->schema([

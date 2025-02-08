@@ -43,6 +43,33 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                 : [...prev, categoryId]
         );
     };
+    const getDisplayedPrice = (product: Product) => {
+        if (product.variants && product.variants.length > 0) {
+            const discountedVariant = product.variants
+                .filter((variant) => variant.original_price > variant.price) // Cari varian yang memiliki diskon
+                .reduce(
+                    (maxDiscount, current) =>
+                        current.original_price - current.price >
+                        maxDiscount.original_price - maxDiscount.price
+                            ? current
+                            : maxDiscount,
+                    product.variants[0]
+                );
+
+            if (
+                discountedVariant &&
+                discountedVariant.original_price > discountedVariant.price
+            ) {
+                return discountedVariant.price;
+            }
+
+            return Math.min(
+                ...product.variants.map((variant) => variant.price)
+            );
+        }
+
+        return product.starting_price; // Jika tidak ada varian, gunakan starting price
+    };
 
     // filters & sorting
     const filteredItems = products.filter((product) =>
@@ -54,17 +81,14 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const sortedProducts = searchItems.sort((a, b) => {
-        const priceA = a.variants
-            ? Math.min(...a.variants.map((variant) => variant.price))
-            : a.starting_price;
-        const priceB = b.variants
-            ? Math.min(...b.variants.map((variant) => variant.price))
-            : b.starting_price;
+        const priceA = getDisplayedPrice(a);
+        const priceB = getDisplayedPrice(b);
 
         if (sortBy === "name-asc") return a.name.localeCompare(b.name);
         if (sortBy === "name-desc") return b.name.localeCompare(a.name);
         if (sortBy === "price-asc") return priceA - priceB;
         if (sortBy === "price-desc") return priceB - priceA;
+
         return priceA - priceB; // Default sorting by price if none specified
     });
     const groupedProducts = groupBy(

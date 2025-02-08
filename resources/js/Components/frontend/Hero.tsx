@@ -20,7 +20,7 @@ export const Hero = ({ banners }: { banners: Banner[] }) => {
                 className="w-full rounded-none lg:rounded-sm md:h-72 lg:h-96"
             >
                 {slideImages.map((image, index) => (
-                    <SwiperSlide>
+                    <SwiperSlide key={index}>
                         <img
                             src={`${
                                 import.meta.env.VITE_APP_URL
