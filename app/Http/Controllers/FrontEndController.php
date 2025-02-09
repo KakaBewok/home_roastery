@@ -18,9 +18,7 @@ class FrontEndController extends Controller
                 $query->where('is_publish', true);
             })
             ->get();
-
-        $products = Product::with('category.products', 'variants')->where('is_publish', true)->get();
-
+        $products = Product::with('category.products')->where('is_publish', true)->get();
         $banners = Banner::orderBy('created_at', 'desc')
             ->get();
 
@@ -29,5 +27,11 @@ class FrontEndController extends Controller
             'banners' => $banners,
             'products' => $products,
         ]);
+    }
+
+    public function show($id)
+    {
+        $product = Product::findOrFail($id);
+        return Inertia::render('frontend/product-details', ['product' => $product]);
     }
 }

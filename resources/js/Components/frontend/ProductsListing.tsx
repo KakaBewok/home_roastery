@@ -44,11 +44,14 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
         );
     };
     const getDisplayedPrice = (product: Product) => {
-        const formattedVariants = product.variants.map((v) => ({
-            ...v,
-            original_price: Number(v.original_price),
-            price: Number(v.price),
-        }));
+        const formattedVariants =
+            product.variants && product.variants.length > 0
+                ? product.variants.map((v) => ({
+                      ...v,
+                      original_price: Number(v.original_price),
+                      price: Number(v.price),
+                  }))
+                : product.variants;
 
         if (formattedVariants && formattedVariants.length > 0) {
             const discountedVariant = formattedVariants
@@ -74,7 +77,7 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
             );
         }
 
-        return product.starting_price; // Jika tidak ada varian, gunakan starting price
+        return 0;
     };
 
     // filters & sorting
@@ -176,12 +179,11 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
 
                         return (
                             <div key={categoryId} className="mb-11">
+                                {/* Category header */}
                                 <div className="flex items-center justify-between px-4 mb-4 md:px-7 lg:px-2">
-                                    <div className="flex items-center justify-center px-4 py-2 rounded-sm bg-slate-100">
-                                        <h2 className="text-lg font-bold md:text-xl text-slate-700">
-                                            {category.name}
-                                        </h2>
-                                    </div>
+                                    <h2 className="text-xl font-bold md:text-2xl text-slate-800">
+                                        {category.name}
+                                    </h2>
                                     {products.length > 4 && (
                                         <Button
                                             size="sm"

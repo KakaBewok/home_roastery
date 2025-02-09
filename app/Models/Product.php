@@ -24,7 +24,7 @@ class Product extends Model
         'is_publish'
     ];
 
-    protected $with = ['photos', 'category', 'variants'];
+    protected $with = ['photos', 'category', 'variants']; //eager loading
 
     protected $appends = ['total_stock', 'starting_price', 'is_out_of_stock', 'average_rating'];
 

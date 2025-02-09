@@ -3,24 +3,27 @@ import { Product } from "@/types/frontend/product";
 import imageNotFound from "../../../../public/images/image-not-found.jpg";
 import { Star } from "lucide-react";
 import { ProductVariant } from "@/types/frontend/productVariant";
+import { Link } from "@inertiajs/react";
 
 function ProductCard({ product }: { product: Product }) {
     const { name, photos, variants, average_rating, total_stock } = product;
     const roundedRating = Math.ceil(average_rating || 0);
     const productImage =
         photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
-    const formattedVariants = variants.map((v) => ({
-        ...v,
-        original_price: Number(v.original_price),
-        price: Number(v.price),
-    }));
+    const formattedVariants =
+        variants && variants.length > 0
+            ? variants.map((v) => ({
+                  ...v,
+                  original_price: Number(v.original_price),
+                  price: Number(v.price),
+              }))
+            : variants;
 
     const getJustifyClassForStockAndRating = () => {
         if (roundedRating < 2) return "justify-end";
         if (total_stock > 4) return "justify-start";
         return "justify-between";
     };
-
     const filterVariants = (variants: ProductVariant[]) => {
         if (!variants || variants.length === 0)
             return { price: 0, original_price: 0 };
@@ -47,7 +50,10 @@ function ProductCard({ product }: { product: Product }) {
         filterVariants(formattedVariants);
 
     return (
-        <a href="#" className="block overflow-hidden group">
+        <Link
+            href={route("product.show", product.id)}
+            className="block overflow-hidden group"
+        >
             <div className="relative h-[210px] md:h-[250px] lg:h-[280px]">
                 <img
                     src={`${
@@ -108,7 +114,7 @@ function ProductCard({ product }: { product: Product }) {
                                     className={
                                         i < roundedRating
                                             ? "text-yellow-500"
-                                            : "text-gray-300"
+                                            : "text-gray-200"
                                     }
                                 />
                             ))}
@@ -121,43 +127,8 @@ function ProductCard({ product }: { product: Product }) {
                     )}
                 </div>
             </div>
-        </a>
-
-        // <a href={`/products/${id}`}>
-        //     <div className="p-1 md:p-2 border-b-[1px] rounded-sm hover:opacity hover:opacity-70 transition duration-400">
-        //         <div className="relative w-full aspect-[4/3] overflow-hidden rounded-sm shadow-sm">
-        //             <img
-        //                 src={`${
-        //                     import.meta.env.VITE_APP_URL
-        //                 }/storage/${productImage}`}
-        //                 alt="Product photo"
-        //                 className="object-cover w-full h-full"
-        //             />
-        //         </div>
-        //         <div className="py-2 space-y-3 md:space-y-3 md:py-3">
-        //             <h1 className="text-sm font-semibold leading-snug text-orange-600 md:text-lg line-clamp-1">
-        //                 {name}
-        //             </h1>
-        //             <p className="text-xs font-light text-slate-500 line-clamp-2 min-h-8">
-        //                 {description}
-        //             </p>
-        //             <div className="flex items-center justify-between">
-        //                 <Button
-        //                     className="px-2 py-1 text-xs border md:px-3 rounded-3xl border-slate-800"
-        //                     variant="outline"
-        //                     size="sm"
-        //                 >
-        //                     Add to cart
-        //                 </Button>
-        //                 <Price
-        //                     currency="Rp. "
-        //                     nominal={price}
-        //                     className="text-xs font-semibold text-orange-600 md:text-lg"
-        //                 />
-        //             </div>
-        //         </div>
-        //     </div>
-        // </a>
+            {/* </a> */}
+        </Link>
     );
 }
 
