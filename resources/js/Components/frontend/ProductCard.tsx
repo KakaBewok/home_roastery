@@ -9,6 +9,11 @@ function ProductCard({ product }: { product: Product }) {
     const roundedRating = Math.ceil(average_rating || 0);
     const productImage =
         photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
+    const formattedVariants = variants.map((v) => ({
+        ...v,
+        original_price: Number(v.original_price),
+        price: Number(v.price),
+    }));
 
     const getJustifyClassForStockAndRating = () => {
         if (roundedRating < 2) return "justify-end";
@@ -39,7 +44,7 @@ function ProductCard({ product }: { product: Product }) {
               );
     };
     const { price: startingPrice, original_price: lowestOriginalPrice } =
-        filterVariants(variants);
+        filterVariants(formattedVariants);
 
     return (
         <a href="#" className="block overflow-hidden group">

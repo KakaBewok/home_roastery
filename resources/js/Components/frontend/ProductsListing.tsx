@@ -44,16 +44,22 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
         );
     };
     const getDisplayedPrice = (product: Product) => {
-        if (product.variants && product.variants.length > 0) {
-            const discountedVariant = product.variants
-                .filter((variant) => variant.original_price > variant.price) // Cari varian yang memiliki diskon
+        const formattedVariants = product.variants.map((v) => ({
+            ...v,
+            original_price: Number(v.original_price),
+            price: Number(v.price),
+        }));
+
+        if (formattedVariants && formattedVariants.length > 0) {
+            const discountedVariant = formattedVariants
+                .filter((variant) => variant.original_price > variant.price)
                 .reduce(
                     (maxDiscount, current) =>
                         current.original_price - current.price >
                         maxDiscount.original_price - maxDiscount.price
                             ? current
                             : maxDiscount,
-                    product.variants[0]
+                    formattedVariants[0]
                 );
 
             if (
@@ -64,7 +70,7 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
             }
 
             return Math.min(
-                ...product.variants.map((variant) => variant.price)
+                ...formattedVariants.map((variant) => variant.price)
             );
         }
 
