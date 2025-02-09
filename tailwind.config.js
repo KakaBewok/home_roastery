@@ -71,5 +71,6 @@ export default {
         require("tailwindcss-animate"),
         require("daisyui"),
         require("tailwind-scrollbar-hide"),
+        require("@tailwindcss/typography"),
     ],
 };

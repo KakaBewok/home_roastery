@@ -55,13 +55,28 @@ function ProductCard({ product }: { product: Product }) {
             className="block overflow-hidden group"
         >
             <div className="relative h-[210px] md:h-[250px] lg:h-[280px]">
-                <img
+                {photos && photos.length > 0 ? (
+                    <img
+                        src={`${
+                            import.meta.env.VITE_APP_URL
+                        }/storage/${productImage}`}
+                        alt="Product photo"
+                        className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
+                    />
+                ) : (
+                    <img
+                        src={`${productImage}`}
+                        alt="Product photo"
+                        className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
+                    />
+                )}
+                {/* <img
                     src={`${
                         import.meta.env.VITE_APP_URL
                     }/storage/${productImage}`}
                     alt="Product photo"
                     className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
-                />
+                /> */}
                 {lowestOriginalPrice > startingPrice &&
                     lowestOriginalPrice > 0 && (
                         <div className="absolute top-0 left-0 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-tl-sm rounded-br-sm opacity-90 lg:text-sm">
@@ -127,7 +142,6 @@ function ProductCard({ product }: { product: Product }) {
                     )}
                 </div>
             </div>
-            {/* </a> */}
         </Link>
     );
 }

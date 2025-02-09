@@ -105,7 +105,6 @@ class ProductResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-
                 TextColumn::make('starting_price')
                     ->label('Starting Price')
                     ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
