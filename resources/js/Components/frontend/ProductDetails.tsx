@@ -1,5 +1,5 @@
 import { Product } from "@/types/frontend/product";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -8,6 +8,7 @@ import "swiper/css/pagination";
 import imageNotFound from "../../../../public/images/image-not-found.jpg";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import Price from "./Price";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
     const [selectedImage, setSelectedImage] = useState<string>(
@@ -22,7 +23,20 @@ export const ProductDetails = ({ product }: { product: Product }) => {
     const [quantity, setQuantity] = useState(1);
     const [cart, setCart] = useState([]);
     const [notification, setNotification] = useState("");
+
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const [showReadMore, setShowReadMore] = useState<boolean>(false);
+    const descriptionRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (descriptionRef.current) {
+            const lineHeight = parseFloat(
+                getComputedStyle(descriptionRef.current).lineHeight
+            );
+            const maxHeight = lineHeight * 5;
+            setShowReadMore(descriptionRef.current.scrollHeight > maxHeight);
+        }
+    }, [product.description]);
 
     const sizes = [...new Set(product.variants.map((variant) => variant.size))];
     const colors = [
@@ -75,7 +89,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
     };
 
     return (
-        <div className="flex flex-col w-full gap-10 py-12 border border-red-500 md:flex-row">
+        <div className="flex flex-col w-full gap-10 py-12 border border-red-500 md:flex-row md:px-3">
             <div className="w-full md:w-1/2">
                 {/* Desktop */}
                 <div className="hidden md:block">
@@ -150,44 +164,47 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                 </div>
             </div>
 
-            {/* baca lagi disini */}
             <div className="w-full px-5 border border-green-500 md:w-1/2">
                 <div className="mb-4">
-                    <h1 className="text-2xl font-bold">{product.name}</h1>
-                    <h3 className="text-lg font-normal text-slate-500">
+                    <h1 className="text-xl font-bold md:text-2xl">
+                        {product.name}
+                    </h1>
+                    <h3 className="text-sm font-normal md:text-lg text-slate-500">
                         {product.category.name}
                     </h3>
                 </div>
 
+                {/* description */}
                 <div className="mb-4">
                     <h3 className="text-base font-bold text-slate-900">
                         Description
                     </h3>
-                    <div
-                        className={`prose-sm prose text-pretty text-sm/4 text-slate-500 ${
-                            isExpanded ? "" : "line-clamp-6"
-                        }`}
-                    >
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {product.description}
-                        </ReactMarkdown>
-                    </div>
-                    {/* Read More or Show Less button */}
-                    {!isExpanded && (
-                        <button
-                            onClick={() => setIsExpanded(true)}
-                            className="mt-1 text-xs underline text-slate-500"
-                        >
-                            Read more
-                        </button>
-                    )}
-                    {isExpanded && (
-                        <button
-                            onClick={() => setIsExpanded(false)}
-                            className="mt-1 text-xs underline text-slate-500"
-                        >
-                            Show less
-                        </button>
+
+                    {product.description?.trim() ? (
+                        <>
+                            <div
+                                ref={descriptionRef}
+                                className={`prose-sm prose text-pretty text-xs/5 md:text-sm/5 text-slate-500 ${
+                                    isExpanded ? "" : "line-clamp-5"
+                                }`}
+                            >
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {product.description}
+                                </ReactMarkdown>
+                            </div>
+                            {showReadMore && (
+                                <button
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="mt-1 text-xs underline text-slate-500"
+                                >
+                                    {isExpanded ? "Show less" : "Read more"}
+                                </button>
+                            )}
+                        </>
+                    ) : (
+                        <p className="text-sm font-light text-slate-400">
+                            No description.
+                        </p>
                     )}
                 </div>
 
