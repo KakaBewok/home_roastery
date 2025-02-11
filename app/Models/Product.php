@@ -24,9 +24,9 @@ class Product extends Model
         'is_publish'
     ];
 
-    protected $with = ['photos', 'category', 'sizes']; //eager loading
+    protected $with = ['photos', 'category', 'sizes'];
 
-    protected $appends = ['total_stock', 'starting_price', 'is_out_of_stock', 'average_rating'];
+    protected $appends = ['total_stock', 'starting_price', 'is_out_of_stock', 'average_rating', 'available_sizes', 'available_colors', 'available_types', 'displayed_product_data'];
 
     protected static function booted(): void
     {
@@ -41,7 +41,7 @@ class Product extends Model
         });
 
         self::saving(static function (Product $product): void {
-            $variants = $product->variants;
+            $variants = $product->sizes->pluck('variants')->flatten();
             $existVariants = [];
 
             foreach ($variants as $variant) {
@@ -91,8 +91,6 @@ class Product extends Model
         return $this->hasMany(ProductSize::class);
     }
 
-    //
-
     public function getAverageRatingAttribute()
     {
         return $this->ratings()->avg('rating') ?? 0;
@@ -113,17 +111,14 @@ class Product extends Model
         return $this->total_stock === 0;
     }
 
-    // //
-
     public function getAvailableSizesAttribute()
     {
         return $this->sizes()->select('size')->distinct()->pluck('size');
     }
 
-    public function getAvailableColorsAttribute($size)
+    public function getAvailableColorsAttribute()
     {
         return $this->sizes()
-            ->where('size', $size)
             ->with('variants')
             ->get()
             ->pluck('variants')
@@ -132,72 +127,43 @@ class Product extends Model
             ->unique()
             ->values();
     }
-    //
-    public function getAvailableColorsBySizeAndTypeAttribute($size, $type)
+
+    public function getAvailableTypesBySizeAttribute()
     {
         return $this->sizes()
-            ->where('size', $size) // Filter berdasarkan ukuran (size)
-            ->with(['variants' => function ($query) use ($type) {
-                $query->where('type', $type); // Filter berdasarkan tipe (type)
-            }])
+            ->with('variants')
             ->get()
-            ->pluck('variants') // Mengambil koleksi variants dari setiap size
-            ->flatten() // Menggabungkan semua varian
-            ->pluck('color') // Mengambil hanya warna
-            ->unique() // Menghapus warna yang duplikat
-            ->values(); // Mengatur ulang indeks array
+            ->pluck('variants')
+            ->flatten()
+            ->pluck('type')
+            ->unique()
+            ->values();
     }
 
-    public function getAvailableTypesBySizeAttribute($size)
+    public function getDisplayedProductDataAttribute()
     {
-        return $this->sizes()
-            ->where('size', $size) // Filter berdasarkan ukuran (size)
-            ->with('variants') // Memuat relasi variants
-            ->get()
-            ->pluck('variants') // Mengambil semua varian dari setiap size
-            ->flatten() // Menggabungkan semua koleksi varian
-            ->pluck('type') // Mengambil hanya tipe (type)
-            ->unique() // Menghapus tipe yang duplikat
-            ->values(); // Mengatur ulang indeks array
-    }
-
-    public function getAvailableTypesBySizeAndColorAttribute($size, $color)
-    {
-        return $this->sizes()
-            ->where('size', $size) // Filter berdasarkan ukuran (size)
-            ->with(['variants' => function ($query) use ($color) {
-                $query->where('color', $color); // Filter berdasarkan warna (color)
-            }])
-            ->get()
-            ->pluck('variants') // Mengambil semua varian dari setiap size
-            ->flatten() // Menggabungkan semua koleksi varian
-            ->pluck('type') // Mengambil hanya tipe (type)
-            ->unique() // Menghapus tipe yang duplikat
-            ->values(); // Mengatur ulang indeks array
-    }
-
-    public function getDisplayedProductData()
-    {
-        // Ambil semua varian dari ukuran produk
         $variants = $this->sizes()
             ->with('variants')
             ->get()
             ->pluck('variants')
             ->flatten();
 
-        // Cari varian dengan diskon tertinggi
         $bestDiscountVariant = $variants
             ->map(function ($variant) {
-                $discount = $variant->original_price - $variant->price; // Hitung diskon
+                $discount = $variant->original_price - $variant->price;
+                $discountPercent = $variant->original_price > 0
+                    ? round(($discount / $variant->original_price) * 100)
+                    : 0;
+
                 return [
                     'variant' => $variant,
                     'discount' => $discount,
+                    'discount_percent' => $discountPercent,
                 ];
             })
-            ->sortByDesc('discount') // Urutkan dari diskon tertinggi
-            ->first(); // Ambil item pertama (tertinggi)
+            ->sortByDesc('discount')
+            ->first();
 
-        // Jika ada varian dengan diskon tertinggi, tampilkan varian tersebut
         if ($bestDiscountVariant && $bestDiscountVariant['discount'] > 0) {
             return [
                 'size' => $bestDiscountVariant['variant']->productSize->size,
@@ -205,18 +171,19 @@ class Product extends Model
                 'type' => $bestDiscountVariant['variant']->type,
                 'price' => $bestDiscountVariant['variant']->price,
                 'original_price' => $bestDiscountVariant['variant']->original_price,
-                'discount' => $bestDiscountVariant['discount']
+                'discount' => $bestDiscountVariant['discount'],
+                'discount_percent' => $bestDiscountVariant['discount_percent'] . '%'
             ];
         }
 
-        // Jika tidak ada diskon, tampilkan harga termurah (starting_price)
         return [
-            'size' => null, // Tidak ada ukuran spesifik
-            'color' => null, // Tidak ada warna spesifik
-            'type' => null, // Tidak ada tipe spesifik
-            'price' => $this->getStartingPriceAttribute(), // Ambil harga termurah
+            'size' => null,
+            'color' => null,
+            'type' => null,
+            'price' => $this->getStartingPriceAttribute(),
             'original_price' => null,
-            'discount' => 0
+            'discount' => 0,
+            'discount_percent' => '0%'
         ];
     }
 }
