@@ -48,7 +48,7 @@ class Product extends Model
                 $variantKey = $variant->size . '-' . $variant->color . '-' . $variant->type;
 
                 if (in_array($variantKey, $existVariants)) {
-                    throw new \Exception('Duplicate size, color, and type combination are not allowed.');
+                    throw new \Exception('Duplicate size, color, and type combination are not allowed!');
                 }
 
                 $existVariants[] = $variantKey;

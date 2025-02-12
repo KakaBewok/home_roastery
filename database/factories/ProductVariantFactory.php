@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Product;
+use App\Models\ProductSize;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,13 +18,12 @@ class ProductVariantFactory extends Factory
     public function definition(): array
     {
         return [
-            'product_id' => Product::factory(),
-            'size' => $this->faker->randomElement(['200gr', '250gr', '100gr', '1kg']),
-            'type' => $this->faker->randomElement(['Coarse', 'Medium', 'Fine']),
+            'product_size_id' => ProductSize::factory(),
             'color' => $this->faker->safeColorName(),
-            'price' => $this->faker->randomFloat(2, 500000, 4000000),
-            'original_price' => $this->faker->randomFloat(2, 600000, 6000000),
-            'stock' => $this->faker->numberBetween(0, 110),
+            'type' => $this->faker->randomElement(['Fine', 'Normal', 'Coarse']),
+            'price' => $this->faker->randomFloat(2, 10000, 200000),
+            'original_price' => $this->faker->optional()->randomFloat(2, 20000, 250000),
+            'stock' => $this->faker->numberBetween(1, 100),
         ];
     }
 }

@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Photo;
 use App\Models\Product;
+use App\Models\ProductSize;
 use App\Models\ProductVariant;
 use App\Models\Rating;
 use App\Models\Review;
@@ -111,9 +112,13 @@ class DatabaseSeeder extends Seeder
                 'user_id' => User::inRandomOrder()->first()->id,
             ]);
 
-            ProductVariant::factory(3)->create([
+            ProductSize::factory(3)->create([
                 'product_id' => $product->id,
-            ]);
+            ])->each(function ($productSize) {
+                ProductVariant::factory(5)->create([
+                    'product_size_id' => $productSize->id,
+                ]);
+            });
         });
     }
 }
