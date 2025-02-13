@@ -43,34 +43,44 @@ class ProductResource extends Resource
                         Textarea::make('description')->rows(10)
                             ->cols(20),
                     ]),
-                Repeater::make('variants')
-                    ->label('Product Variants')
-                    ->relationship('variants')
+
+                Repeater::make('sizes')
+                    ->label('Product Sizes')
+                    ->relationship('sizes')
                     ->schema([
-                        TextInput::make('size')
-                            ->label('Size')
+                        TextInput::make('size_name')
+                            ->label('Size Name')
                             ->required(),
-                        TextInput::make('type')
-                            ->label('Type')
+
+                        Repeater::make('variants')
+                            ->label('Product Variants')
+                            ->relationship('variants')
+                            ->schema([
+                                TextInput::make('type')
+                                    ->label('Type')
+                                    ->required(),
+                                TextInput::make('color')
+                                    ->label('Color'),
+                                TextInput::make('price')
+                                    ->label('Price')
+                                    ->numeric()
+                                    ->required()
+                                    ->minValue(0),
+                                TextInput::make('original_price')
+                                    ->label('Strikethrough Price')
+                                    ->numeric()
+                                    ->minValue(0),
+                                TextInput::make('stock')
+                                    ->numeric()
+                                    ->required()
+                                    ->label('Stock')
+                                    ->minValue(0),
+                            ])
+                            ->columns(2)
                             ->required(),
-                        TextInput::make('color')
-                            ->label('Color'),
-                        TextInput::make('price')
-                            ->label('Price')
-                            ->numeric()
-                            ->required()
-                            ->minValue(0),
-                        TextInput::make('original_price')
-                            ->label('Strikethrough Price')
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('stock')
-                            ->numeric()
-                            ->required()
-                            ->label('Stock')
-                            ->minValue(0),
                     ])
-                    ->columns(2)->required(),
+                    ->columns(1)
+                    ->required(),
                 Repeater::make('photos')
                     ->relationship('photos')
                     ->schema([
@@ -96,23 +106,37 @@ class ProductResource extends Resource
         return $table
             ->query(
                 Product::query()
-                    ->selectRaw('
-                        products.*, 
-                        (SELECT SUM(product_variants.stock) FROM product_variants WHERE product_variants.product_id = products.id) AS total_stock,
-                        (SELECT MIN(product_variants.price) FROM product_variants WHERE product_variants.product_id = products.id) AS starting_price
-                    ')
+                    ->select('products.*')
+                    ->selectRaw('(
+                        SELECT SUM(product_variants.stock) 
+                        FROM product_variants 
+                        JOIN product_sizes ON product_variants.product_size_id = product_sizes.id
+                        WHERE product_sizes.product_id = products.id
+                    ) AS total_stock')
+                    ->selectRaw('(
+                        SELECT MIN(product_variants.price) 
+                        FROM product_variants 
+                        JOIN product_sizes ON product_variants.product_size_id = product_sizes.id
+                        WHERE product_sizes.product_id = products.id
+                    ) AS starting_price')
             )
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('starting_price')
-                    ->label('Starting Price')
-                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
-                    ->sortable(),
 
                 TextColumn::make('total_stock')
                     ->label('Total Stock')
-                    ->sortable(),
+                    ->sortable(query: function ($query, $direction) {
+                        return $query->orderBy('total_stock', $direction);
+                    }),
+
+                TextColumn::make('starting_price')
+                    ->label('Starting Price')
+                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                    ->sortable(query: function ($query, $direction) {
+                        return $query->orderBy('starting_price', $direction);
+                    }),
+
                 IconColumn::make('is_publish')
                     ->boolean()
             ])->defaultSort('created_at', 'desc')
@@ -124,12 +148,15 @@ class ProductResource extends Resource
                         'in stock' => 'In Stock'
                     ])
                     ->query(function (Builder $query, array $data) {
+                        if (!isset($data['value'])) {
+                            return;
+                        }
                         if ($data['value'] === 'out of stock') {
-                            $query->whereDoesntHave('variants', function (Builder $query) {
+                            $query->whereDoesntHave('sizes.variants', function (Builder $query) {
                                 $query->where('stock', '>', 0);
                             });
                         } elseif ($data['value'] === 'in stock') {
-                            $query->whereHas('variants', function (Builder $query) {
+                            $query->whereHas('sizes.variants', function (Builder $query) {
                                 $query->where('stock', '>', 0);
                             });
                         }

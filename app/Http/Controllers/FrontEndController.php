@@ -18,7 +18,14 @@ class FrontEndController extends Controller
                 $query->where('is_publish', true);
             })
             ->get();
-        $products = Product::with('category.products')->where('is_publish', true)->get();
+
+        $products = Product::with([
+            'category.products',
+            'sizes.variants'
+        ])
+            ->where('is_publish', true)
+            ->get();
+
         $banners = Banner::orderBy('created_at', 'desc')
             ->get();
 

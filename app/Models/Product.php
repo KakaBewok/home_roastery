@@ -142,28 +142,45 @@ class Product extends Model
 
     public function getDisplayedProductDataAttribute()
     {
-        $variants = $this->sizes()
+        $variants = $this->getAllVariants();
+        $bestDiscountVariant = $this->getBestDiscountVariant($variants);
+
+        return $this->formatDisplayedProductData($bestDiscountVariant);
+    }
+
+    private function getAllVariants()
+    {
+        return $this->sizes()
             ->with('variants')
             ->get()
             ->pluck('variants')
             ->flatten();
+    }
 
-        $bestDiscountVariant = $variants
-            ->map(function ($variant) {
-                $discount = $variant->original_price - $variant->price;
-                $discountPercent = $variant->original_price > 0
-                    ? round(($discount / $variant->original_price) * 100)
-                    : 0;
-
-                return [
-                    'variant' => $variant,
-                    'discount' => $discount,
-                    'discount_percent' => $discountPercent,
-                ];
-            })
+    private function getBestDiscountVariant($variants)
+    {
+        return $variants
+            ->map(fn($variant) => $this->calculateDiscountData($variant))
             ->sortByDesc('discount')
             ->first();
+    }
 
+    private function calculateDiscountData($variant)
+    {
+        $discount = $variant->original_price - $variant->price;
+        $discountPercent = $variant->original_price > 0
+            ? round(($discount / $variant->original_price) * 100)
+            : 0;
+
+        return [
+            'variant' => $variant,
+            'discount' => $discount,
+            'discount_percent' => $discountPercent,
+        ];
+    }
+
+    private function formatDisplayedProductData($bestDiscountVariant)
+    {
         if ($bestDiscountVariant && $bestDiscountVariant['discount'] > 0) {
             return [
                 'size' => $bestDiscountVariant['variant']->productSize->size,
@@ -176,6 +193,11 @@ class Product extends Model
             ];
         }
 
+        return $this->getDefaultProductData();
+    }
+
+    private function getDefaultProductData()
+    {
         return [
             'size' => null,
             'color' => null,
