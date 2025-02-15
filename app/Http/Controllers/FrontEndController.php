@@ -20,6 +20,7 @@ class FrontEndController extends Controller
             ->get();
 
         $products = Product::with([
+            'photos',
             'category.products',
             'sizes.variants'
         ])

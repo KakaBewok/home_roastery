@@ -5,49 +5,71 @@ import { Star } from "lucide-react";
 import { ProductVariant } from "@/types/frontend/productVariant";
 import { Link } from "@inertiajs/react";
 
+// id: string;
+//     category: Category;
+//     description: string;
+//     sizes: ProductSize[];
+//     is_publish: boolean;
+//     starting_price: number;
+//     is_out_of_stock: boolean;
+//     available_sizes: string[];
+//     available_colors: string[];
+//     available_types: string[];
+//     displayed_product_data: DisplayedProductData;
+
 function ProductCard({ product }: { product: Product }) {
-    const { name, photos, variants, average_rating, total_stock } = product;
+    const {
+        name,
+        photos,
+        average_rating,
+        total_stock,
+        displayed_product_data,
+    } = product;
     const roundedRating = Math.ceil(average_rating || 0);
     const productImage =
         photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
-    const formattedVariants =
-        variants && variants.length > 0
-            ? variants.map((v) => ({
-                  ...v,
-                  original_price: Number(v.original_price),
-                  price: Number(v.price),
-              }))
-            : variants;
-
+    const { original_price: lowestOriginalPrice, price: startingPrice } =
+        displayed_product_data;
     const getJustifyClassForStockAndRating = () => {
         if (roundedRating < 2) return "justify-end";
         if (total_stock > 4) return "justify-start";
         return "justify-between";
     };
-    const filterVariants = (variants: ProductVariant[]) => {
-        if (!variants || variants.length === 0)
-            return { price: 0, original_price: 0 };
 
-        const discountedVariants = variants.filter(
-            (variant) => variant.original_price > variant.price
-        );
+    // const formattedVariants =
+    //     variants && variants.length > 0
+    //         ? variants.map((v) => ({
+    //               ...v,
+    //               original_price: Number(v.original_price),
+    //               price: Number(v.price),
+    //           }))
+    //         : variants;
 
-        return discountedVariants.length > 0
-            ? discountedVariants.reduce(
-                  (maxDiscount, current) =>
-                      current.original_price - current.price >
-                      maxDiscount.original_price - maxDiscount.price
-                          ? current
-                          : maxDiscount,
-                  discountedVariants[0]
-              )
-            : variants.reduce(
-                  (min, current) => (current.price < min.price ? current : min),
-                  variants[0]
-              );
-    };
-    const { price: startingPrice, original_price: lowestOriginalPrice } =
-        filterVariants(formattedVariants);
+    // const filterVariants = (variants: ProductVariant[]) => {
+    //     if (!variants || variants.length === 0)
+    //         return { price: 0, original_price: 0 };
+
+    //     const discountedVariants = variants.filter(
+    //         (variant) => variant.original_price > variant.price
+    //     );
+
+    //     return discountedVariants.length > 0
+    //         ? discountedVariants.reduce(
+    //               (maxDiscount, current) =>
+    //                   current.original_price - current.price >
+    //                   maxDiscount.original_price - maxDiscount.price
+    //                       ? current
+    //                       : maxDiscount,
+    //               discountedVariants[0]
+    //           )
+    //         : variants.reduce(
+    //               (min, current) => (current.price < min.price ? current : min),
+    //               variants[0]
+    //           );
+    // };
+
+    // const { price: startingPrice, original_price: lowestOriginalPrice } =
+    //     filterVariants(formattedVariants);
 
     return (
         <Link
@@ -70,13 +92,13 @@ function ProductCard({ product }: { product: Product }) {
                         className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
                     />
                 )}
-                {lowestOriginalPrice > startingPrice &&
-                    lowestOriginalPrice > 0 && (
+                {(lowestOriginalPrice ?? 0) > startingPrice &&
+                    (lowestOriginalPrice ?? 0) > 0 && (
                         <div className="absolute top-0 left-0 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-tl-sm rounded-br-sm opacity-90 lg:text-sm">
                             -
                             {Math.round(
-                                ((lowestOriginalPrice - startingPrice) /
-                                    lowestOriginalPrice) *
+                                (((lowestOriginalPrice ?? 0) - startingPrice) /
+                                    (lowestOriginalPrice ?? 0)) *
                                     100
                             )}
                             %
@@ -95,13 +117,13 @@ function ProductCard({ product }: { product: Product }) {
                             nominal={startingPrice}
                             className="text-sm font-semibold tracking-wide md:text-base"
                         />
-                        {lowestOriginalPrice > 0 && (
+                        {(lowestOriginalPrice ?? 0) > 0 && (
                             <>
                                 <div className="flex items-center">
                                     <del className="text-gray-600 opacity-60">
                                         <Price
                                             currency="Rp. "
-                                            nominal={lowestOriginalPrice}
+                                            nominal={lowestOriginalPrice ?? 0}
                                             className="text-xs tracking-normal md:text-sm"
                                         />
                                     </del>

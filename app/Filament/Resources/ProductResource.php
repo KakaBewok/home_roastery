@@ -45,15 +45,15 @@ class ProductResource extends Resource
                     ]),
 
                 Repeater::make('sizes')
-                    ->label('Product Sizes')
+                    ->label('Product Size/Weight')
                     ->relationship('sizes')
                     ->schema([
-                        TextInput::make('size_name')
-                            ->label('Size Name')
+                        TextInput::make('size')
+                            ->label('Size/Weight')
                             ->required(),
 
                         Repeater::make('variants')
-                            ->label('Product Variants')
+                            ->label('Variant')
                             ->relationship('variants')
                             ->schema([
                                 TextInput::make('type')
@@ -62,12 +62,12 @@ class ProductResource extends Resource
                                 TextInput::make('color')
                                     ->label('Color'),
                                 TextInput::make('price')
-                                    ->label('Price')
+                                    ->label('Price (Rp)')
                                     ->numeric()
                                     ->required()
                                     ->minValue(0),
                                 TextInput::make('original_price')
-                                    ->label('Strikethrough Price')
+                                    ->label('Strikethrough Price (Rp)')
                                     ->numeric()
                                     ->minValue(0),
                                 TextInput::make('stock')
@@ -123,7 +123,6 @@ class ProductResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-
                 TextColumn::make('total_stock')
                     ->label('Total Stock')
                     ->sortable(query: function ($query, $direction) {

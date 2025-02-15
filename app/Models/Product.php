@@ -24,8 +24,6 @@ class Product extends Model
         'is_publish'
     ];
 
-    protected $with = ['photos', 'category', 'sizes'];
-
     protected $appends = ['total_stock', 'starting_price', 'is_out_of_stock', 'average_rating', 'available_sizes', 'available_colors', 'available_types', 'displayed_product_data'];
 
     protected static function booted(): void
@@ -128,7 +126,7 @@ class Product extends Model
             ->values();
     }
 
-    public function getAvailableTypesBySizeAttribute()
+    public function getAvailableTypesAttribute()
     {
         return $this->sizes()
             ->with('variants')
