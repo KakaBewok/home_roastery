@@ -1,21 +1,7 @@
 import Price from "../../Components/frontend/Price";
 import { Product } from "@/types/frontend/product";
-import imageNotFound from "../../../../public/images/image-not-found.jpg";
 import { Star } from "lucide-react";
-import { ProductVariant } from "@/types/frontend/productVariant";
 import { Link } from "@inertiajs/react";
-
-// id: string;
-//     category: Category;
-//     description: string;
-//     sizes: ProductSize[];
-//     is_publish: boolean;
-//     starting_price: number;
-//     is_out_of_stock: boolean;
-//     available_sizes: string[];
-//     available_colors: string[];
-//     available_types: string[];
-//     displayed_product_data: DisplayedProductData;
 
 function ProductCard({ product }: { product: Product }) {
     const {
@@ -27,7 +13,9 @@ function ProductCard({ product }: { product: Product }) {
     } = product;
     const roundedRating = Math.ceil(average_rating || 0);
     const productImage =
-        photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
+        photos && photos.length > 0
+            ? `${import.meta.env.VITE_APP_URL}/storage/${photos[0].image_url}`
+            : `${import.meta.env.VITE_APP_URL}/images/image-not-found.jpg`;
     const { original_price, price } = displayed_product_data;
     const lowestOriginalPrice = Number(original_price ?? 0);
     const startingPrice = Number(price ?? 0);
@@ -38,62 +26,17 @@ function ProductCard({ product }: { product: Product }) {
         return "justify-between";
     };
 
-    // const formattedVariants =
-    //     variants && variants.length > 0
-    //         ? variants.map((v) => ({
-    //               ...v,
-    //               original_price: Number(v.original_price),
-    //               price: Number(v.price),
-    //           }))
-    //         : variants;
-
-    // const filterVariants = (variants: ProductVariant[]) => {
-    //     if (!variants || variants.length === 0)
-    //         return { price: 0, original_price: 0 };
-
-    //     const discountedVariants = variants.filter(
-    //         (variant) => variant.original_price > variant.price
-    //     );
-
-    //     return discountedVariants.length > 0
-    //         ? discountedVariants.reduce(
-    //               (maxDiscount, current) =>
-    //                   current.original_price - current.price >
-    //                   maxDiscount.original_price - maxDiscount.price
-    //                       ? current
-    //                       : maxDiscount,
-    //               discountedVariants[0]
-    //           )
-    //         : variants.reduce(
-    //               (min, current) => (current.price < min.price ? current : min),
-    //               variants[0]
-    //           );
-    // };
-
-    // const { price: startingPrice, original_price: lowestOriginalPrice } =
-    //     filterVariants(formattedVariants);
-
     return (
         <Link
             href={route("product.show", product.id)}
             className="block overflow-hidden group"
         >
             <div className="relative h-[210px] md:h-[250px] lg:h-[280px]">
-                {photos && photos.length > 0 ? (
-                    <img
-                        src={`${
-                            import.meta.env.VITE_APP_URL
-                        }/storage/${productImage}`}
-                        alt="Product photo"
-                        className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
-                    />
-                ) : (
-                    <img
-                        src={`${productImage}`}
-                        alt="Product photo"
-                        className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
-                    />
-                )}
+                <img
+                    src={productImage}
+                    alt="Product photo"
+                    className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300 rounded-sm opacity-100 group-hover:opacity-85"
+                />
                 {(lowestOriginalPrice ?? 0) > startingPrice &&
                     (lowestOriginalPrice ?? 0) > 0 && (
                         <div className="absolute top-0 left-0 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-tl-sm rounded-br-sm opacity-90 lg:text-sm">
@@ -136,7 +79,7 @@ function ProductCard({ product }: { product: Product }) {
                 <div
                     className={`flex items-center mt-1 ${getJustifyClassForStockAndRating()}`}
                 >
-                    {roundedRating > 2 && (
+                    {roundedRating > 3 && (
                         <div className="flex items-center mt-1">
                             {Array.from({ length: 5 }, (_, i) => (
                                 <Star

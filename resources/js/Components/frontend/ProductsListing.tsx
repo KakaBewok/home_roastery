@@ -19,14 +19,12 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
     categories,
     products,
 }) => {
-    // states
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [activeFilters, setActiveFilters] = useState<string[]>([]);
     const [sortBy, setSortBy] = useState<string>("");
 
-    // methods
     const handleSelectFilter = (category: string) => {
         if (!activeFilters.includes(category)) {
             setActiveFilters([...activeFilters, category]);
@@ -43,44 +41,7 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
                 : [...prev, categoryId]
         );
     };
-    const getDisplayedPrice = (product: Product) => {
-        const formattedVariants =
-            product.variants && product.variants.length > 0
-                ? product.variants.map((v) => ({
-                      ...v,
-                      original_price: Number(v.original_price),
-                      price: Number(v.price),
-                  }))
-                : product.variants;
 
-        if (formattedVariants && formattedVariants.length > 0) {
-            const discountedVariant = formattedVariants
-                .filter((variant) => variant.original_price > variant.price)
-                .reduce(
-                    (maxDiscount, current) =>
-                        current.original_price - current.price >
-                        maxDiscount.original_price - maxDiscount.price
-                            ? current
-                            : maxDiscount,
-                    formattedVariants[0]
-                );
-
-            if (
-                discountedVariant &&
-                discountedVariant.original_price > discountedVariant.price
-            ) {
-                return discountedVariant.price;
-            }
-
-            return Math.min(
-                ...formattedVariants.map((variant) => variant.price)
-            );
-        }
-
-        return 0;
-    };
-
-    // filters & sorting
     const filteredItems = products.filter((product) =>
         activeFilters.length > 0
             ? activeFilters.includes(product.category.name)
@@ -90,21 +51,22 @@ const ProductsListing: React.FC<ProductsListingProps> = ({
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const sortedProducts = searchItems.sort((a, b) => {
-        const priceA = getDisplayedPrice(a);
-        const priceB = getDisplayedPrice(b);
+        const priceA = Number(a.displayed_product_data.price);
+        const priceB = Number(b.displayed_product_data.price);
 
         if (sortBy === "name-asc") return a.name.localeCompare(b.name);
         if (sortBy === "name-desc") return b.name.localeCompare(a.name);
         if (sortBy === "price-asc") return priceA - priceB;
         if (sortBy === "price-desc") return priceB - priceA;
 
-        return priceA - priceB; // Default sorting by price if none specified
+        return priceA - priceB;
     });
     const groupedProducts = groupBy(
         sortedProducts,
         (product: Product) => product.category.id
     );
 
+    //fixing nanti
     useEffect(() => {
         if (products.length > 0) {
             setLoading(false);

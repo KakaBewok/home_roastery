@@ -51,7 +51,7 @@ class Product extends Model
 
                 foreach ($size->variants as $variant) {
                     if (in_array($variant->type, $variantTypes)) {
-                        throw new \Exception('Duplicate variant type is not allowed in the same product size!');
+                        throw new \Exception('Duplicate type is not allowed in the same product size!');
                     }
                     $variantTypes[] = $variant->type;
                 }
