@@ -17,8 +17,8 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->words(2, true),
-            'description' => $this->faker->sentence(15, true)
+            'name' => $this->faker->randomElement(['Arabica', 'Robusta', 'Liberica']),
+            'description' => $this->faker->randomElement(['Description test', 'This is a description of category', '-']),
         ];
     }
 }

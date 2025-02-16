@@ -18,10 +18,11 @@ class ReviewFactory extends Factory
      */
     public function definition(): array
     {
+        $productReview = ['Good product', 'Bad product', 'Average product', 'Excellent product', 'Not recommended'];
         return [
             'user_id' => User::factory(),
             'product_id' => Product::factory(),
-            'comment' => $this->faker->sentence(15, true),
+            'comment' => $this->faker->randomElement($productReview),
         ];
     }
 }

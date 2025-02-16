@@ -19,7 +19,7 @@ class ProductSizeFactory extends Factory
     {
         return [
             'product_id' => Product::factory(),
-            'size' => $this->faker->randomElement(['100gr', '200gr', '500gr', '1kg']),
+            'size' => $this->faker->randomElement(['100gr', '250gr', '1kg']),
         ];
     }
 }

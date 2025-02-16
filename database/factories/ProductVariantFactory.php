@@ -21,9 +21,9 @@ class ProductVariantFactory extends Factory
             'product_size_id' => ProductSize::factory(),
             'color' => $this->faker->safeColorName(),
             'type' => $this->faker->randomElement(['Fine', 'Normal', 'Coarse']),
-            'price' => $this->faker->randomFloat(2, 10000, 200000),
-            'original_price' => $this->faker->optional()->randomFloat(2, 20000, 250000),
-            'stock' => $this->faker->numberBetween(1, 100),
+            'price' => $this->faker->randomFloat(2, 30000, 70000),
+            'original_price' => $this->faker->optional()->randomFloat(2, 70000, 90000),
+            'stock' => $this->faker->numberBetween(1, 3),
         ];
     }
 }

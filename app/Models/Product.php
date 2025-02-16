@@ -39,17 +39,22 @@ class Product extends Model
         });
 
         self::saving(static function (Product $product): void {
-            $variants = $product->sizes->pluck('variants')->flatten();
-            $existVariants = [];
+            $sizes = [];
 
-            foreach ($variants as $variant) {
-                $variantKey = $variant->size . '-' . $variant->color . '-' . $variant->type;
-
-                if (in_array($variantKey, $existVariants)) {
-                    throw new \Exception('Duplicate size, color, and type combination are not allowed!');
+            foreach ($product->sizes as $size) {
+                if (in_array($size->size, $sizes)) {
+                    throw new \Exception('Duplicate size is not allowed in the same product!');
                 }
+                $sizes[] = $size->size;
 
-                $existVariants[] = $variantKey;
+                $variantTypes = [];
+
+                foreach ($size->variants as $variant) {
+                    if (in_array($variant->type, $variantTypes)) {
+                        throw new \Exception('Duplicate variant type is not allowed in the same product size!');
+                    }
+                    $variantTypes[] = $variant->type;
+                }
             }
         });
     }

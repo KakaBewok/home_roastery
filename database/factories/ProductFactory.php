@@ -17,11 +17,13 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $productName = ['Bomber Candy', 'Karameelaa', 'Sepakung Triplekill', 'Super Carbonic', 'Ranca Bali', 'Sang Arjuna', 'Luwak Wild Selection', 'Aceh Gayo Heritage', 'Kintamani Bali', 'Toraja Sulawesi', 'Java Preanger', 'Mandailing Sumatra', 'Flores Bajawa', 'Wamena Papua', 'Lombok Sembalun'];
+
         return [
             'category_id' => Category::factory(),
-            'name' => $this->faker->unique()->words(2, true),
-            'description' => $this->faker->sentence(15, true),
-            'is_publish' => true,
+            'name' => $this->faker->unique()->randomElement($productName),
+            'description' => $this->faker->randomElement(['Description test', 'This is a description of product', '-']),
+            'is_publish' => $this->faker->boolean(80),
         ];
     }
 }

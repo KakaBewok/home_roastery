@@ -39,9 +39,10 @@ class DatabaseSeeder extends Seeder
         //Shipping -5 
         //Payment -5 
         //User - 4
-        //Banner - 5
+        //Banner - 2
         //Rating - 5
         //Review - 5
+        //ProductSize - 3
         //ProductVariant - 3
 
         User::create([
@@ -70,7 +71,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('customer4'),
         ]);
 
-        Banner::factory(5)->create();
+        Banner::factory(2)->create();
         Category::factory(3)->create();
         PaymentMethod::factory(3)->create();
         Product::factory(15)->recycle([
@@ -115,7 +116,7 @@ class DatabaseSeeder extends Seeder
             ProductSize::factory(3)->create([
                 'product_id' => $product->id,
             ])->each(function ($productSize) {
-                ProductVariant::factory(5)->create([
+                ProductVariant::factory(3)->create([
                     'product_size_id' => $productSize->id,
                 ]);
             });

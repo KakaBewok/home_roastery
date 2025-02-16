@@ -32,6 +32,7 @@ class ProductResource extends Resource
             ->schema([
                 TextInput::make('name')->required()
                     ->maxLength(255),
+
                 Select::make('category_id')
                     ->relationship('category', 'name')
                     ->searchable()
@@ -44,43 +45,6 @@ class ProductResource extends Resource
                             ->cols(20),
                     ]),
 
-                Repeater::make('sizes')
-                    ->label('Product Size/Weight')
-                    ->relationship('sizes')
-                    ->schema([
-                        TextInput::make('size')
-                            ->label('Size/Weight')
-                            ->required(),
-
-                        Repeater::make('variants')
-                            ->label('Variant')
-                            ->relationship('variants')
-                            ->schema([
-                                TextInput::make('type')
-                                    ->label('Type')
-                                    ->required(),
-                                TextInput::make('color')
-                                    ->label('Color'),
-                                TextInput::make('price')
-                                    ->label('Price (Rp)')
-                                    ->numeric()
-                                    ->required()
-                                    ->minValue(0),
-                                TextInput::make('original_price')
-                                    ->label('Strikethrough Price (Rp)')
-                                    ->numeric()
-                                    ->minValue(0),
-                                TextInput::make('stock')
-                                    ->numeric()
-                                    ->required()
-                                    ->label('Stock')
-                                    ->minValue(0),
-                            ])
-                            ->columns(2)
-                            ->required(),
-                    ])
-                    ->columns(1)
-                    ->required(),
                 Repeater::make('photos')
                     ->relationship('photos')
                     ->schema([
@@ -91,13 +55,50 @@ class ProductResource extends Resource
                             ->maxSize(1024)
                             ->acceptedFileTypes(['image/jpeg', 'image/png'])
                     ])
-                    ->columns(1)
                     ->label('Product images'),
+                MarkdownEditor::make('description'),
                 Toggle::make('is_publish')
                     ->label('Show in online store?')
                     ->default(true)
                     ->inline(false),
-                MarkdownEditor::make('description'),
+                Repeater::make('sizes')
+                    ->label('Product Size/Weight')
+                    ->relationship('sizes')
+                    ->schema([
+                        TextInput::make('size')
+                            ->label('Size/Weight')
+                            ->required()->columns(1),
+
+                        Repeater::make('variants')
+                            ->label('Variant')
+                            ->relationship('variants')
+                            ->schema([
+                                TextInput::make('type')
+                                    ->label('Type')
+                                    ->required(),
+                                TextInput::make('color')
+                                    ->label('Color'),
+                                TextInput::make('stock')
+                                    ->numeric()
+                                    ->required()
+                                    ->label('Stock')
+                                    ->minValue(0),
+                                TextInput::make('price')
+                                    ->label('Price')
+                                    ->numeric()
+                                    ->required()
+                                    ->minValue(0),
+                                TextInput::make('original_price')
+                                    ->label('Strikethrough Price')
+                                    ->numeric()
+                                    ->minValue(0),
+
+                            ])
+                            ->required()->columns(3),
+                    ])
+                    ->columnSpan('full')
+                    ->columns(2)
+                    ->required(),
             ]);
     }
 

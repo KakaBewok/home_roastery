@@ -28,8 +28,10 @@ function ProductCard({ product }: { product: Product }) {
     const roundedRating = Math.ceil(average_rating || 0);
     const productImage =
         photos && photos.length > 0 ? photos[0].image_url : imageNotFound;
-    const { original_price: lowestOriginalPrice, price: startingPrice } =
-        displayed_product_data;
+    const { original_price, price } = displayed_product_data;
+    const lowestOriginalPrice = Number(original_price ?? 0);
+    const startingPrice = Number(price ?? 0);
+
     const getJustifyClassForStockAndRating = () => {
         if (roundedRating < 2) return "justify-end";
         if (total_stock > 4) return "justify-start";
@@ -95,7 +97,6 @@ function ProductCard({ product }: { product: Product }) {
                 {(lowestOriginalPrice ?? 0) > startingPrice &&
                     (lowestOriginalPrice ?? 0) > 0 && (
                         <div className="absolute top-0 left-0 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-tl-sm rounded-br-sm opacity-90 lg:text-sm">
-                            -
                             {Math.round(
                                 (((lowestOriginalPrice ?? 0) - startingPrice) /
                                     (lowestOriginalPrice ?? 0)) *

@@ -18,7 +18,7 @@ class BannerFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->words(2, true),
+            'name' => $this->faker->randomElement(['Promo', 'Achievement']),
             'banner_url' => $this->faker->imageUrl
         ];
     }
