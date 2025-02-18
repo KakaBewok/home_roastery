@@ -17,9 +17,17 @@ export const ProductDetails = ({ product }: { product: Product }) => {
             : imageNotFound
     );
 
-    const [selectedSize, setSelectedSize] = useState(null);
-    const [selectedColor, setSelectedColor] = useState(null);
-    const [selectedType, setSelectedType] = useState(null);
+    console.log(product.displayed_product_data);
+
+    const [selectedSize, setSelectedSize] = useState<string | null>(
+        product.displayed_product_data.size
+    );
+    const [selectedColor, setSelectedColor] = useState<string | null>(
+        product.displayed_product_data.color
+    );
+    const [selectedType, setSelectedType] = useState<string | null>(
+        product.displayed_product_data.type
+    );
     const [quantity, setQuantity] = useState(1);
     const [cart, setCart] = useState([]);
     const [notification, setNotification] = useState("");
@@ -38,23 +46,55 @@ export const ProductDetails = ({ product }: { product: Product }) => {
         }
     }, [product.description]);
 
-    const sizes = [...new Set(product.variants.map((variant) => variant.size))];
-    const colors = [
-        ...new Set(product.variants.map((variant) => variant.color)),
-    ];
-    const types = [...new Set(product.variants.map((variant) => variant.type))];
+    // const sizes = product.available_sizes;
+    // const colors = product.available_colors;
+    // const types = product.available_types;
 
-    const selectedVariant = product.variants.find(
+    // const selectedProductSize = product.sizes.find(
+    //     (productSize) => productSize.size === selectedSize
+    // );
+
+    // const selectedVariant = selectedProductSize?.variants.find(
+    //     (variant) =>
+    //         variant.color === selectedColor && variant.type === selectedType
+    // );
+
+    // const maxStock = selectedVariant ? selectedVariant.stock : 0;
+    // const isVariantSelected =
+    //     selectedSize && selectedColor && selectedType && selectedVariant;
+    // const isOutOfStock = selectedVariant ? selectedVariant.stock === 0 : false;
+
+    //
+
+    const sizes = product?.sizes || [];
+    const selectedProductSize = sizes.find(
+        (size) => size.size === selectedSize
+    );
+    const colors =
+        selectedProductSize?.variants
+            .map((variant) => variant.color)
+            .filter((value, index, self) => self.indexOf(value) === index) ||
+        [];
+    const types =
+        selectedProductSize?.variants
+            .filter((variant) => variant.color === selectedColor)
+            .map((variant) => variant.type)
+            .filter((value, index, self) => self.indexOf(value) === index) ||
+        [];
+
+    const selectedVariant = selectedProductSize?.variants.find(
         (variant) =>
-            variant.size === selectedSize &&
-            variant.color === selectedColor &&
-            variant.type === selectedType
+            variant.color === selectedColor && variant.type === selectedType
     );
 
-    const maxStock = selectedVariant ? selectedVariant.stock : 0;
-    const isVariantSelected =
-        selectedSize && selectedColor && selectedType && selectedVariant;
-    const isOutOfStock = selectedVariant && selectedVariant.stock === 0;
+    const maxStock = selectedVariant?.stock || 0;
+    const isVariantSelected = !!(
+        selectedSize &&
+        selectedColor &&
+        selectedType &&
+        selectedVariant
+    );
+    const isOutOfStock = selectedVariant?.stock === 0;
 
     const handleAddToCart = () => {
         if (!isVariantSelected || isOutOfStock) return;
@@ -216,26 +256,24 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                 )}
 
                 <div className="flex flex-col gap-5 py-5 border border-red-500">
-                    {/* size option */}
+                    {/* Pilihan Ukuran */}
                     <div>
                         <h3 className="font-semibold">Pilih Ukuran:</h3>
                         <div className="flex space-x-2">
                             {sizes.map((size) => {
-                                const hasStock = product.variants.some(
-                                    (variant) =>
-                                        variant.size === size &&
-                                        variant.stock > 0
+                                const hasStock = size.variants.some(
+                                    (variant) => variant.stock > 0
                                 );
                                 return (
                                     <button
-                                        key={size}
+                                        key={size.id}
                                         onClick={() => {
-                                            setSelectedSize(size);
+                                            setSelectedSize(size.size);
                                             setSelectedColor(null);
                                             setSelectedType(null);
                                         }}
                                         className={`px-4 py-2 border rounded ${
-                                            selectedSize === size
+                                            selectedSize === size.size
                                                 ? "bg-green-500 text-white"
                                                 : "bg-gray-200"
                                         } ${
@@ -245,7 +283,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                         }`}
                                         disabled={!hasStock}
                                     >
-                                        {size}
+                                        {size.size}
                                     </button>
                                 );
                             })}
@@ -257,13 +295,12 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                         <h3 className="font-semibold">Pilih Warna:</h3>
                         <div className="flex space-x-2">
                             {colors.map((color) => {
-                                const isAvailable = product.variants.some(
-                                    (variant) =>
-                                        variant.color === color &&
-                                        (!selectedSize ||
-                                            variant.size === selectedSize) &&
-                                        variant.stock > 0
-                                );
+                                const isAvailable =
+                                    selectedProductSize?.variants.some(
+                                        (variant) =>
+                                            variant.color === color &&
+                                            variant.stock > 0
+                                    );
                                 return (
                                     <button
                                         key={color}
@@ -296,15 +333,13 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                         <h3 className="font-semibold">Pilih Tipe Bahan:</h3>
                         <div className="flex space-x-2">
                             {types.map((type) => {
-                                const isAvailable = product.variants.some(
-                                    (variant) =>
-                                        variant.type === type &&
-                                        (!selectedSize ||
-                                            variant.size === selectedSize) &&
-                                        (!selectedColor ||
-                                            variant.color === selectedColor) &&
-                                        variant.stock > 0
-                                );
+                                const isAvailable =
+                                    selectedProductSize?.variants.some(
+                                        (variant) =>
+                                            variant.type === type &&
+                                            variant.color === selectedColor &&
+                                            variant.stock > 0
+                                    );
                                 return (
                                     <button
                                         key={type}
@@ -331,7 +366,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                     </div>
 
                     {/* Harga & Stok */}
-                    <div className="">
+                    <div>
                         <p className="text-lg font-semibold">
                             Harga: Rp{" "}
                             {selectedVariant
@@ -348,7 +383,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                     </div>
 
                     {/* Pilihan Quantity */}
-                    <div className="">
+                    <div>
                         <h3 className="font-semibold">Jumlah:</h3>
                         <input
                             type="number"

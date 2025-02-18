@@ -39,7 +39,7 @@ class FrontEndController extends Controller
 
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with(['sizes', 'photos', 'category', 'sizes.variants'])->findOrFail($id);
         return Inertia::render('frontend/product-details', ['product' => $product]);
     }
 }

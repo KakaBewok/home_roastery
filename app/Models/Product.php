@@ -196,17 +196,17 @@ class Product extends Model
             ];
         }
 
-        return $this->getDefaultProductData();
+        return $this->getDefaultProductData($bestDiscountVariant['variant']);
     }
 
-    private function getDefaultProductData()
+    private function getDefaultProductData($variant)
     {
         return [
-            'size' => null,
-            'color' => null,
-            'type' => null,
+            'size' => $variant->productSize->size,
+            'color' => $variant->color,
+            'type' => $variant->type,
             'price' => $this->getStartingPriceAttribute(),
-            'original_price' => null,
+            'original_price' => $variant->original_price,
             'discount' => 0,
             'discount_percent' => '0%'
         ];
