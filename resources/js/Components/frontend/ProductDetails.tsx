@@ -9,6 +9,7 @@ import imageNotFound from "../../../../public/images/image-not-found.jpg";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Price from "./Price";
+import { Button } from "../ui/button";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
     const [selectedImage, setSelectedImage] = useState<string>(
@@ -16,8 +17,6 @@ export const ProductDetails = ({ product }: { product: Product }) => {
             ? product.photos[0].image_url
             : imageNotFound
     );
-
-    console.log(product.displayed_product_data);
 
     const [selectedSize, setSelectedSize] = useState<string | null>(
         product.displayed_product_data.size
@@ -45,26 +44,6 @@ export const ProductDetails = ({ product }: { product: Product }) => {
             setShowReadMore(descriptionRef.current.scrollHeight > maxHeight);
         }
     }, [product.description]);
-
-    // const sizes = product.available_sizes;
-    // const colors = product.available_colors;
-    // const types = product.available_types;
-
-    // const selectedProductSize = product.sizes.find(
-    //     (productSize) => productSize.size === selectedSize
-    // );
-
-    // const selectedVariant = selectedProductSize?.variants.find(
-    //     (variant) =>
-    //         variant.color === selectedColor && variant.type === selectedType
-    // );
-
-    // const maxStock = selectedVariant ? selectedVariant.stock : 0;
-    // const isVariantSelected =
-    //     selectedSize && selectedColor && selectedType && selectedVariant;
-    // const isOutOfStock = selectedVariant ? selectedVariant.stock === 0 : false;
-
-    //
 
     const sizes = product?.sizes || [];
     const selectedProductSize = sizes.find(
@@ -130,7 +109,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
 
     return (
         <div className="flex flex-col w-full gap-10 py-12 border border-red-500 md:flex-row md:px-3">
-            <div className="w-full md:w-1/2">
+            <div className="w-full border border-blue-500 md:w-1/2">
                 {/* Desktop */}
                 <div className="hidden md:block">
                     {product.photos && product.photos.length > 0 ? (
@@ -258,24 +237,30 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                 <div className="flex flex-col gap-5 py-5 border border-red-500">
                     {/* Pilihan Ukuran */}
                     <div>
-                        <h3 className="font-semibold">Pilih Ukuran:</h3>
+                        <h3 className="font-semibold">
+                            Size options: {selectedSize}
+                        </h3>
                         <div className="flex space-x-2">
                             {sizes.map((size) => {
                                 const hasStock = size.variants.some(
                                     (variant) => variant.stock > 0
                                 );
                                 return (
-                                    <button
+                                    <Button
                                         key={size.id}
                                         onClick={() => {
                                             setSelectedSize(size.size);
-                                            setSelectedColor(null);
-                                            setSelectedType(null);
+                                            setSelectedColor(
+                                                size.variants[0].color ?? null
+                                            );
+                                            setSelectedType(
+                                                size.variants[0].type ?? null
+                                            );
                                         }}
-                                        className={`px-4 py-2 border rounded ${
+                                        className={`relative px-4 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
                                             selectedSize === size.size
-                                                ? "bg-green-500 text-white"
-                                                : "bg-gray-200"
+                                                ? "bg-green-50 border border-green-500 text-green-600 hover:bg-green-50 hover:text-green-600"
+                                                : "bg-slate-50 border border-slate-400 text-slate-400 hover:bg-slate-50 hover:text-slate-400"
                                         } ${
                                             hasStock
                                                 ? ""
@@ -284,15 +269,24 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                         disabled={!hasStock}
                                     >
                                         {size.size}
-                                    </button>
+                                        {size.variants.filter(
+                                            (variant) =>
+                                                variant.original_price > 0
+                                        ).length > 0 && (
+                                            // <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 ">
+                                            <span className="absolute bottom-0 right-0 px-1 py-0 text-xs font-bold text-white transform bg-red-500 rounded-tl-md">
+                                                %
+                                            </span>
+                                        )}
+                                    </Button>
                                 );
                             })}
                         </div>
                     </div>
 
                     {/* Pilihan Warna */}
-                    <div>
-                        <h3 className="font-semibold">Pilih Warna:</h3>
+                    {/* <div>
+                        <h3 className="font-semibold">Colors</h3>
                         <div className="flex space-x-2">
                             {colors.map((color) => {
                                 const isAvailable =
@@ -326,11 +320,11 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                 );
                             })}
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Pilihan Tipe */}
                     <div>
-                        <h3 className="font-semibold">Pilih Tipe Bahan:</h3>
+                        <h3 className="font-semibold">Types</h3>
                         <div className="flex space-x-2">
                             {types.map((type) => {
                                 const isAvailable =
@@ -341,16 +335,16 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                             variant.stock > 0
                                     );
                                 return (
-                                    <button
+                                    <Button
                                         key={type}
                                         onClick={() => {
                                             if (isAvailable)
                                                 setSelectedType(type);
                                         }}
-                                        className={`px-4 py-2 border rounded ${
+                                        className={`relative px-4 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
                                             selectedType === type
-                                                ? "bg-yellow-500 text-white"
-                                                : "bg-gray-200"
+                                                ? "bg-green-50 border border-green-500 text-green-600 hover:bg-green-50 hover:text-green-600"
+                                                : "bg-slate-50 border border-slate-400 text-slate-400 hover:bg-slate-50 hover:text-slate-400"
                                         } ${
                                             isAvailable
                                                 ? ""
@@ -359,7 +353,24 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                         disabled={!isAvailable}
                                     >
                                         {type}
-                                    </button>
+                                        {product.sizes
+                                            .filter(
+                                                (size) =>
+                                                    size.size === selectedSize
+                                            )[0]
+                                            .variants.filter(
+                                                (variant) =>
+                                                    variant.type === type
+                                            )
+                                            .filter(
+                                                (variant) =>
+                                                    variant.original_price > 0
+                                            ).length > 0 && (
+                                            <span className="absolute bottom-0 right-0 px-1 py-0 text-xs font-bold text-white transform bg-red-500 rounded-tl-md">
+                                                %
+                                            </span>
+                                        )}
+                                    </Button>
                                 );
                             })}
                         </div>
@@ -368,17 +379,24 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                     {/* Harga & Stok */}
                     <div>
                         <p className="text-lg font-semibold">
-                            Harga: Rp{" "}
+                            Rp{" "}
                             {selectedVariant
                                 ? selectedVariant.price.toLocaleString()
                                 : "0"}
                         </p>
+                        <del className="text-gray-600 opacity-60">
+                            {selectedVariant
+                                ? selectedVariant.original_price
+                                    ? selectedVariant.original_price.toLocaleString()
+                                    : ""
+                                : "0"}
+                        </del>
                         <p
                             className={`text-md ${
                                 maxStock > 0 ? "text-green-600" : "text-red-600"
                             }`}
                         >
-                            Stok: {maxStock > 0 ? maxStock : "Habis"}
+                            Stok {maxStock > 0 ? maxStock : "Habis"}
                         </p>
                     </div>
 
