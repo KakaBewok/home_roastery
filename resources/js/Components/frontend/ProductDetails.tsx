@@ -108,8 +108,8 @@ export const ProductDetails = ({ product }: { product: Product }) => {
     };
 
     return (
-        <div className="flex flex-col w-full gap-10 py-12 border border-red-500 md:flex-row md:px-3">
-            <div className="w-full border border-blue-500 md:w-1/2">
+        <div className="flex flex-col w-full gap-10 py-12 md:flex-row md:px-3">
+            <div className="w-full md:w-1/2">
                 {/* Desktop */}
                 <div className="hidden md:block">
                     {product.photos && product.photos.length > 0 ? (
@@ -183,109 +183,115 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                 </div>
             </div>
 
-            <div className="w-full px-5 border border-green-500 md:w-1/2">
-                <div className="mb-4">
-                    <h1 className="text-xl font-bold md:text-2xl">
-                        {product.name}
-                    </h1>
-                    <h3 className="text-sm font-normal md:text-lg text-slate-500">
-                        {product.category.name}
-                    </h3>
-                </div>
-
-                {/* description */}
-                <div className="mb-4">
-                    <h3 className="text-base font-bold text-slate-900">
-                        Description
-                    </h3>
-
-                    {product.description?.trim() ? (
-                        <>
-                            <div
-                                ref={descriptionRef}
-                                className={`prose-sm prose text-pretty text-xs/5 md:text-sm/5 text-slate-500 ${
-                                    isExpanded ? "" : "line-clamp-5"
-                                }`}
-                            >
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {product.description}
-                                </ReactMarkdown>
-                            </div>
-                            {showReadMore && (
-                                <button
-                                    onClick={() => setIsExpanded(!isExpanded)}
-                                    className="mt-1 text-xs underline text-slate-500"
-                                >
-                                    {isExpanded ? "Show less" : "Read more"}
-                                </button>
-                            )}
-                        </>
-                    ) : (
-                        <p className="text-sm font-light text-slate-400">
-                            No description.
-                        </p>
-                    )}
-                </div>
-
-                {/* Notifikasi */}
-                {notification && (
-                    <div className="p-2 mt-2 text-green-800 bg-green-300 rounded">
-                        {notification}
-                    </div>
-                )}
-
-                <div className="flex flex-col gap-5 py-5 border border-red-500">
-                    {/* Pilihan Ukuran */}
-                    <div>
-                        <h3 className="font-semibold">
-                            Size options: {selectedSize}
+            {/* <div className="w-full overflow-y-auto scrollbar-hide"> */}
+            <div className="w-full md:w-1/2 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400">
+                <div className="px-5">
+                    <div className="mb-4">
+                        <h1 className="text-xl font-bold md:text-2xl">
+                            {product.name}
+                        </h1>
+                        <h3 className="text-sm font-normal md:text-lg text-slate-500">
+                            {product.category.name}
                         </h3>
-                        <div className="flex space-x-2">
-                            {sizes.map((size) => {
-                                const hasStock = size.variants.some(
-                                    (variant) => variant.stock > 0
-                                );
-                                return (
-                                    <Button
-                                        key={size.id}
-                                        onClick={() => {
-                                            setSelectedSize(size.size);
-                                            setSelectedColor(
-                                                size.variants[0].color ?? null
-                                            );
-                                            setSelectedType(
-                                                size.variants[0].type ?? null
-                                            );
-                                        }}
-                                        className={`relative px-4 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
-                                            selectedSize === size.size
-                                                ? "bg-green-50 border border-green-500 text-green-600 hover:bg-green-50 hover:text-green-600"
-                                                : "bg-slate-50 border border-slate-400 text-slate-400 hover:bg-slate-50 hover:text-slate-400"
-                                        } ${
-                                            hasStock
-                                                ? ""
-                                                : "opacity-50 cursor-not-allowed"
-                                        }`}
-                                        disabled={!hasStock}
-                                    >
-                                        {size.size}
-                                        {size.variants.filter(
-                                            (variant) =>
-                                                variant.original_price > 0
-                                        ).length > 0 && (
-                                            // <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 ">
-                                            <span className="absolute bottom-0 right-0 px-1 py-0 text-xs font-bold text-white transform bg-red-500 rounded-tl-md">
-                                                %
-                                            </span>
-                                        )}
-                                    </Button>
-                                );
-                            })}
-                        </div>
                     </div>
 
-                    {/* Pilihan Warna */}
-                    {/* <div>
+                    {/* description */}
+                    <div className="mb-4">
+                        <h3 className="text-base font-bold text-slate-900">
+                            Description
+                        </h3>
+
+                        {product.description?.trim() ? (
+                            <>
+                                <div
+                                    ref={descriptionRef}
+                                    className={`prose-sm prose text-pretty text-xs/5 md:text-sm/5 text-slate-500 ${
+                                        isExpanded ? "" : "line-clamp-5"
+                                    }`}
+                                >
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {product.description}
+                                    </ReactMarkdown>
+                                </div>
+                                {showReadMore && (
+                                    <button
+                                        onClick={() =>
+                                            setIsExpanded(!isExpanded)
+                                        }
+                                        className="mt-1 text-xs underline text-slate-500"
+                                    >
+                                        {isExpanded ? "Show less" : "Read more"}
+                                    </button>
+                                )}
+                            </>
+                        ) : (
+                            <p className="text-sm font-light text-slate-400">
+                                No description.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Notifikasi */}
+                    {notification && (
+                        <div className="p-2 mt-2 text-green-800 bg-green-300 rounded">
+                            {notification}
+                        </div>
+                    )}
+
+                    <div className="flex flex-col gap-5 py-5">
+                        {/* Pilihan Ukuran */}
+                        <div>
+                            <h3 className="font-semibold">
+                                Size options: {selectedSize}
+                            </h3>
+                            <div className="flex space-x-2">
+                                {sizes.map((size) => {
+                                    const hasStock = size.variants.some(
+                                        (variant) => variant.stock > 0
+                                    );
+                                    return (
+                                        <Button
+                                            key={size.id}
+                                            onClick={() => {
+                                                setSelectedSize(size.size);
+                                                setSelectedColor(
+                                                    size.variants[0].color ??
+                                                        null
+                                                );
+                                                setSelectedType(
+                                                    size.variants[0].type ??
+                                                        null
+                                                );
+                                            }}
+                                            className={`relative px-4 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
+                                                selectedSize === size.size
+                                                    ? "bg-green-50 border border-green-500 text-green-600 hover:bg-green-50 hover:text-green-600"
+                                                    : "bg-slate-50 border border-slate-400 text-slate-400 hover:bg-slate-50 hover:text-slate-400"
+                                            } ${
+                                                hasStock
+                                                    ? ""
+                                                    : "opacity-50 cursor-not-allowed"
+                                            }`}
+                                            disabled={!hasStock}
+                                        >
+                                            {size.size}
+                                            {size.variants.filter(
+                                                (variant) =>
+                                                    variant.original_price > 0
+                                            ).length > 0 && (
+                                                // <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 ">
+                                                <span className="absolute bottom-0 right-0 px-1 py-0 text-xs font-bold text-white transform bg-red-500 rounded-tl-md">
+                                                    %
+                                                </span>
+                                            )}
+                                        </Button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Pilihan Warna */}
+                        {/* <div>
                         <h3 className="font-semibold">Colors</h3>
                         <div className="flex space-x-2">
                             {colors.map((color) => {
@@ -322,122 +328,128 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                         </div>
                     </div> */}
 
-                    {/* Pilihan Tipe */}
-                    <div>
-                        <h3 className="font-semibold">Types</h3>
-                        <div className="flex space-x-2">
-                            {types.map((type) => {
-                                const isAvailable =
-                                    selectedProductSize?.variants.some(
-                                        (variant) =>
-                                            variant.type === type &&
-                                            variant.color === selectedColor &&
-                                            variant.stock > 0
+                        {/* Pilihan Tipe */}
+                        <div>
+                            <h3 className="font-semibold">Types</h3>
+                            <div className="flex space-x-2">
+                                {types.map((type) => {
+                                    const isAvailable =
+                                        selectedProductSize?.variants.some(
+                                            (variant) =>
+                                                variant.type === type &&
+                                                variant.color ===
+                                                    selectedColor &&
+                                                variant.stock > 0
+                                        );
+                                    return (
+                                        <Button
+                                            key={type}
+                                            onClick={() => {
+                                                if (isAvailable)
+                                                    setSelectedType(type);
+                                            }}
+                                            className={`relative px-4 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
+                                                selectedType === type
+                                                    ? "bg-green-50 border border-green-500 text-green-600 hover:bg-green-50 hover:text-green-600"
+                                                    : "bg-slate-50 border border-slate-400 text-slate-400 hover:bg-slate-50 hover:text-slate-400"
+                                            } ${
+                                                isAvailable
+                                                    ? ""
+                                                    : "opacity-50 cursor-not-allowed"
+                                            }`}
+                                            disabled={!isAvailable}
+                                        >
+                                            {type}
+                                            {product.sizes
+                                                .filter(
+                                                    (size) =>
+                                                        size.size ===
+                                                        selectedSize
+                                                )[0]
+                                                .variants.filter(
+                                                    (variant) =>
+                                                        variant.type === type
+                                                )
+                                                .filter(
+                                                    (variant) =>
+                                                        variant.original_price >
+                                                        0
+                                                ).length > 0 && (
+                                                <span className="absolute bottom-0 right-0 px-1 py-0 text-xs font-bold text-white transform bg-red-500 rounded-tl-md">
+                                                    %
+                                                </span>
+                                            )}
+                                        </Button>
                                     );
-                                return (
-                                    <Button
-                                        key={type}
-                                        onClick={() => {
-                                            if (isAvailable)
-                                                setSelectedType(type);
-                                        }}
-                                        className={`relative px-4 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
-                                            selectedType === type
-                                                ? "bg-green-50 border border-green-500 text-green-600 hover:bg-green-50 hover:text-green-600"
-                                                : "bg-slate-50 border border-slate-400 text-slate-400 hover:bg-slate-50 hover:text-slate-400"
-                                        } ${
-                                            isAvailable
-                                                ? ""
-                                                : "opacity-50 cursor-not-allowed"
-                                        }`}
-                                        disabled={!isAvailable}
-                                    >
-                                        {type}
-                                        {product.sizes
-                                            .filter(
-                                                (size) =>
-                                                    size.size === selectedSize
-                                            )[0]
-                                            .variants.filter(
-                                                (variant) =>
-                                                    variant.type === type
-                                            )
-                                            .filter(
-                                                (variant) =>
-                                                    variant.original_price > 0
-                                            ).length > 0 && (
-                                            <span className="absolute bottom-0 right-0 px-1 py-0 text-xs font-bold text-white transform bg-red-500 rounded-tl-md">
-                                                %
-                                            </span>
-                                        )}
-                                    </Button>
-                                );
-                            })}
+                                })}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Harga & Stok */}
-                    <div>
-                        <p className="text-lg font-semibold">
-                            Rp{" "}
-                            {selectedVariant
-                                ? selectedVariant.price.toLocaleString()
-                                : "0"}
-                        </p>
-                        <del className="text-gray-600 opacity-60">
-                            {selectedVariant
-                                ? selectedVariant.original_price
-                                    ? selectedVariant.original_price.toLocaleString()
-                                    : ""
-                                : "0"}
-                        </del>
-                        <p
-                            className={`text-md ${
-                                maxStock > 0 ? "text-green-600" : "text-red-600"
-                            }`}
-                        >
-                            Stok {maxStock > 0 ? maxStock : "Habis"}
-                        </p>
-                    </div>
+                        {/* Harga & Stok */}
+                        <div>
+                            <p className="text-lg font-semibold">
+                                Rp{" "}
+                                {selectedVariant
+                                    ? selectedVariant.price.toLocaleString()
+                                    : "0"}
+                            </p>
+                            <del className="text-gray-600 opacity-60">
+                                {selectedVariant
+                                    ? selectedVariant.original_price
+                                        ? selectedVariant.original_price.toLocaleString()
+                                        : ""
+                                    : "0"}
+                            </del>
+                            <p
+                                className={`text-md ${
+                                    maxStock > 0
+                                        ? "text-green-600"
+                                        : "text-red-600"
+                                }`}
+                            >
+                                Stok {maxStock > 0 ? maxStock : "Habis"}
+                            </p>
+                        </div>
 
-                    {/* Pilihan Quantity */}
-                    <div>
-                        <h3 className="font-semibold">Jumlah:</h3>
-                        <input
-                            type="number"
-                            min="1"
-                            max={maxStock}
-                            value={quantity}
-                            onChange={(e) => {
-                                let val = parseInt(e.target.value);
-                                if (isNaN(val) || val < 1) val = 1;
-                                if (val > maxStock) val = maxStock;
-                                setQuantity(val);
-                            }}
-                            className="w-20 p-2 text-center border rounded"
-                            disabled={!selectedVariant || maxStock === 0}
-                        />
-                    </div>
+                        {/* Pilihan Quantity */}
+                        <div>
+                            <h3 className="font-semibold">Jumlah:</h3>
+                            <input
+                                type="number"
+                                min="1"
+                                max={maxStock}
+                                value={quantity}
+                                onChange={(e) => {
+                                    let val = parseInt(e.target.value);
+                                    if (isNaN(val) || val < 1) val = 1;
+                                    if (val > maxStock) val = maxStock;
+                                    setQuantity(val);
+                                }}
+                                className="w-20 p-2 text-center border rounded"
+                                disabled={!selectedVariant || maxStock === 0}
+                            />
+                        </div>
 
-                    {/* Tombol Add to Cart & Checkout */}
-                    <div className="flex space-x-4">
-                        <button
-                            onClick={handleAddToCart}
-                            disabled={!isVariantSelected || isOutOfStock}
-                            className={`px-6 py-3 rounded text-white ${
-                                isVariantSelected && !isOutOfStock
-                                    ? "bg-blue-500 hover:bg-blue-600"
-                                    : "bg-gray-400 cursor-not-allowed"
-                            }`}
-                        >
-                            Add to Cart
-                        </button>
-                        <button
-                            onClick={handleCheckout}
-                            className="px-6 py-3 text-white bg-green-500 rounded hover:bg-green-600"
-                        >
-                            Checkout
-                        </button>
+                        {/* Tombol Add to Cart & Checkout */}
+                        <div className="flex space-x-4">
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={!isVariantSelected || isOutOfStock}
+                                className={`px-6 py-3 rounded text-white ${
+                                    isVariantSelected && !isOutOfStock
+                                        ? "bg-blue-500 hover:bg-blue-600"
+                                        : "bg-gray-400 cursor-not-allowed"
+                                }`}
+                            >
+                                Add to Cart
+                            </button>
+                            <button
+                                onClick={handleCheckout}
+                                className="px-6 py-3 text-white bg-green-500 rounded hover:bg-green-600"
+                            >
+                                Checkout
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
