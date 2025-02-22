@@ -19,7 +19,6 @@ class ProductVariantFactory extends Factory
     {
         return [
             'product_size_id' => ProductSize::factory(),
-            'color' => $this->faker->safeColorName(),
             'type' => $this->faker->randomElement(['Fine', 'Normal', 'Coarse']),
             'price' => $this->faker->randomFloat(2, 30000, 70000),
             'original_price' => $this->faker->optional()->randomFloat(2, 70000, 90000),

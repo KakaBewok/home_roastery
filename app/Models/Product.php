@@ -24,7 +24,7 @@ class Product extends Model
         'is_publish'
     ];
 
-    protected $appends = ['total_stock', 'starting_price', 'is_out_of_stock', 'average_rating', 'available_sizes', 'available_colors', 'available_types', 'displayed_product_data'];
+    protected $appends = ['total_stock', 'starting_price', 'is_out_of_stock', 'average_rating', 'available_sizes', 'available_types', 'displayed_product_data'];
 
     protected static function booted(): void
     {
@@ -117,18 +117,6 @@ class Product extends Model
     public function getAvailableSizesAttribute()
     {
         return $this->sizes()->select('size')->distinct()->pluck('size');
-    }
-
-    public function getAvailableColorsAttribute()
-    {
-        return $this->sizes()
-            ->with('variants')
-            ->get()
-            ->pluck('variants')
-            ->flatten()
-            ->pluck('color')
-            ->unique()
-            ->values();
     }
 
     public function getAvailableTypesAttribute()

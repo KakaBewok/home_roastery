@@ -10,6 +10,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Price from "./Price";
 import { Button } from "../ui/button";
+import { Star } from "lucide-react";
+import { Cart } from "@/types/frontend/cart";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
     const [selectedImage, setSelectedImage] = useState<string>(
@@ -17,18 +19,16 @@ export const ProductDetails = ({ product }: { product: Product }) => {
             ? product.photos[0].image_url
             : imageNotFound
     );
+    const roundedRating = Math.ceil(product.average_rating || 0);
 
     const [selectedSize, setSelectedSize] = useState<string | null>(
         product.displayed_product_data.size
-    );
-    const [selectedColor, setSelectedColor] = useState<string | null>(
-        product.displayed_product_data.color
     );
     const [selectedType, setSelectedType] = useState<string | null>(
         product.displayed_product_data.type
     );
     const [quantity, setQuantity] = useState(1);
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState<Cart[]>([]);
     const [notification, setNotification] = useState("");
 
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -49,27 +49,19 @@ export const ProductDetails = ({ product }: { product: Product }) => {
     const selectedProductSize = sizes.find(
         (size) => size.size === selectedSize
     );
-    const colors =
-        selectedProductSize?.variants
-            .map((variant) => variant.color)
-            .filter((value, index, self) => self.indexOf(value) === index) ||
-        [];
     const types =
         selectedProductSize?.variants
-            .filter((variant) => variant.color === selectedColor)
             .map((variant) => variant.type)
             .filter((value, index, self) => self.indexOf(value) === index) ||
         [];
 
     const selectedVariant = selectedProductSize?.variants.find(
-        (variant) =>
-            variant.color === selectedColor && variant.type === selectedType
+        (variant) => variant.type === selectedType
     );
 
     const maxStock = selectedVariant?.stock || 0;
     const isVariantSelected = !!(
         selectedSize &&
-        selectedColor &&
         selectedType &&
         selectedVariant
     );
@@ -78,11 +70,10 @@ export const ProductDetails = ({ product }: { product: Product }) => {
     const handleAddToCart = () => {
         if (!isVariantSelected || isOutOfStock) return;
 
-        const newItem = {
-            id: selectedVariant.id,
+        const newItem: Cart = {
+            id: "random-id-" + Math.random().toString(36).substr(2, 9),
             name: product.name,
             size: selectedSize,
-            color: selectedColor,
             type: selectedType,
             price: selectedVariant.price,
             quantity: quantity,
@@ -183,7 +174,6 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                 </div>
             </div>
 
-            {/* <div className="w-full overflow-y-auto scrollbar-hide"> */}
             <div className="w-full md:w-1/2 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400">
                 <div className="px-5">
                     <div className="mb-4">
@@ -193,41 +183,30 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                         <h3 className="text-sm font-normal md:text-lg text-slate-500">
                             {product.category.name}
                         </h3>
-                    </div>
-
-                    {/* description */}
-                    <div className="mb-4">
-                        <h3 className="text-base font-bold text-slate-900">
-                            Description
-                        </h3>
-
-                        {product.description?.trim() ? (
-                            <>
-                                <div
-                                    ref={descriptionRef}
-                                    className={`prose-sm prose text-pretty text-xs/5 md:text-sm/5 text-slate-500 ${
-                                        isExpanded ? "" : "line-clamp-5"
-                                    }`}
-                                >
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                        {product.description}
-                                    </ReactMarkdown>
+                        {roundedRating > 3 && (
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center">
+                                    {Array.from({ length: 5 }, (_, i) => (
+                                        <Star
+                                            key={i}
+                                            size={16}
+                                            className={
+                                                i < roundedRating
+                                                    ? "text-yellow-500 h-4 w-4"
+                                                    : "text-gray-200 h-4 w-4"
+                                            }
+                                        />
+                                    ))}
                                 </div>
-                                {showReadMore && (
-                                    <button
-                                        onClick={() =>
-                                            setIsExpanded(!isExpanded)
-                                        }
-                                        className="mt-1 text-xs underline text-slate-500"
-                                    >
-                                        {isExpanded ? "Show less" : "Read more"}
-                                    </button>
-                                )}
-                            </>
-                        ) : (
-                            <p className="text-sm font-light text-slate-400">
-                                No description.
-                            </p>
+                                <span className="text-sm font-normal text-slate-600">
+                                    ({roundedRating}.0)
+                                </span>
+                                <span className="text-sm font-normal text-slate-600">
+                                    {product.reviews.length > 0
+                                        ? `${product.reviews.length} Reviews`
+                                        : ""}
+                                </span>
+                            </div>
                         )}
                     </div>
 
@@ -241,8 +220,11 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                     <div className="flex flex-col gap-5 py-5">
                         {/* Pilihan Ukuran */}
                         <div>
-                            <h3 className="font-semibold">
-                                Size options: {selectedSize}
+                            <h3 className="mb-1 text-base font-medium">
+                                Packaging size:{" "}
+                                <span className="text-slate-400">
+                                    {selectedSize}
+                                </span>
                             </h3>
                             <div className="flex space-x-2">
                                 {sizes.map((size) => {
@@ -254,16 +236,14 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                             key={size.id}
                                             onClick={() => {
                                                 setSelectedSize(size.size);
-                                                setSelectedColor(
-                                                    size.variants[0].color ??
-                                                        null
-                                                );
                                                 setSelectedType(
-                                                    size.variants[0].type ??
-                                                        null
+                                                    size.variants.find(
+                                                        (variant) =>
+                                                            variant.stock > 0
+                                                    )?.type ?? null
                                                 );
                                             }}
-                                            className={`relative px-4 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
+                                            className={`relative px-5 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
                                                 selectedSize === size.size
                                                     ? "bg-green-50 border border-green-500 text-green-600 hover:bg-green-50 hover:text-green-600"
                                                     : "bg-slate-50 border border-slate-400 text-slate-400 hover:bg-slate-50 hover:text-slate-400"
@@ -279,7 +259,6 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                                 (variant) =>
                                                     variant.original_price > 0
                                             ).length > 0 && (
-                                                // <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 ">
                                                 <span className="absolute bottom-0 right-0 px-1 py-0 text-xs font-bold text-white transform bg-red-500 rounded-tl-md">
                                                     %
                                                 </span>
@@ -290,55 +269,20 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </div>
                         </div>
 
-                        {/* Pilihan Warna */}
-                        {/* <div>
-                        <h3 className="font-semibold">Colors</h3>
-                        <div className="flex space-x-2">
-                            {colors.map((color) => {
-                                const isAvailable =
-                                    selectedProductSize?.variants.some(
-                                        (variant) =>
-                                            variant.color === color &&
-                                            variant.stock > 0
-                                    );
-                                return (
-                                    <button
-                                        key={color}
-                                        onClick={() => {
-                                            if (isAvailable) {
-                                                setSelectedColor(color);
-                                                setSelectedType(null);
-                                            }
-                                        }}
-                                        className={`px-4 py-2 border rounded ${
-                                            selectedColor === color
-                                                ? "bg-blue-500 text-white"
-                                                : "bg-gray-200"
-                                        } ${
-                                            isAvailable
-                                                ? ""
-                                                : "opacity-50 cursor-not-allowed"
-                                        }`}
-                                        disabled={!isAvailable}
-                                    >
-                                        {color}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div> */}
-
                         {/* Pilihan Tipe */}
                         <div>
-                            <h3 className="font-semibold">Types</h3>
+                            <h3 className="mb-1 text-base font-medium">
+                                Grinding options:{" "}
+                                <span className="text-slate-400">
+                                    {selectedType}
+                                </span>
+                            </h3>
                             <div className="flex space-x-2">
                                 {types.map((type) => {
                                     const isAvailable =
                                         selectedProductSize?.variants.some(
                                             (variant) =>
                                                 variant.type === type &&
-                                                variant.color ===
-                                                    selectedColor &&
                                                 variant.stock > 0
                                         );
                                     return (
@@ -348,18 +292,22 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                                 if (isAvailable)
                                                     setSelectedType(type);
                                             }}
-                                            className={`relative px-4 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
+                                            className={`relative px-5 py-2 border rounded-md hover:bg-transparent hover:text-inherit ${
                                                 selectedType === type
                                                     ? "bg-green-50 border border-green-500 text-green-600 hover:bg-green-50 hover:text-green-600"
                                                     : "bg-slate-50 border border-slate-400 text-slate-400 hover:bg-slate-50 hover:text-slate-400"
                                             } ${
                                                 isAvailable
                                                     ? ""
-                                                    : "opacity-50 cursor-not-allowed"
+                                                    : "opacity-30 cursor-not-allowed"
                                             }`}
                                             disabled={!isAvailable}
                                         >
-                                            {type}
+                                            {isAvailable ? (
+                                                type
+                                            ) : (
+                                                <del>{type}</del>
+                                            )}
                                             {product.sizes
                                                 .filter(
                                                     (size) =>
@@ -385,49 +333,81 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </div>
                         </div>
 
-                        {/* Harga & Stok */}
-                        <div>
-                            <p className="text-lg font-semibold">
-                                Rp{" "}
-                                {selectedVariant
-                                    ? selectedVariant.price.toLocaleString()
-                                    : "0"}
-                            </p>
-                            <del className="text-gray-600 opacity-60">
-                                {selectedVariant
-                                    ? selectedVariant.original_price
-                                        ? selectedVariant.original_price.toLocaleString()
-                                        : ""
-                                    : "0"}
-                            </del>
-                            <p
-                                className={`text-md ${
-                                    maxStock > 0
-                                        ? "text-green-600"
-                                        : "text-red-600"
-                                }`}
-                            >
-                                Stok {maxStock > 0 ? maxStock : "Habis"}
-                            </p>
-                        </div>
-
                         {/* Pilihan Quantity */}
                         <div>
-                            <h3 className="font-semibold">Jumlah:</h3>
-                            <input
-                                type="number"
-                                min="1"
-                                max={maxStock}
-                                value={quantity}
-                                onChange={(e) => {
-                                    let val = parseInt(e.target.value);
-                                    if (isNaN(val) || val < 1) val = 1;
-                                    if (val > maxStock) val = maxStock;
-                                    setQuantity(val);
-                                }}
-                                className="w-20 p-2 text-center border rounded"
-                                disabled={!selectedVariant || maxStock === 0}
-                            />
+                            <h3 className="mb-1 text-base font-medium">
+                                Qty:{" "}
+                                <span className="text-slate-400">
+                                    {quantity}
+                                </span>
+                            </h3>
+                            <div className="flex items-end gap-3">
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max={maxStock}
+                                    value={quantity}
+                                    onChange={(e) => {
+                                        let val = parseInt(e.target.value);
+                                        if (isNaN(val) || val < 1) val = 1;
+                                        if (val > maxStock) val = maxStock;
+                                        setQuantity(val);
+                                    }}
+                                    className="w-20 px-2 text-center text-green-600 border border-green-500 rounded-md bg-green-50"
+                                    disabled={
+                                        !selectedVariant || maxStock === 0
+                                    }
+                                />
+                                <p
+                                    className={`text-md ${
+                                        maxStock > 0
+                                            ? "text-green-600"
+                                            : "text-red-600"
+                                    }`}
+                                >
+                                    Max. {maxStock > 0 && maxStock}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Harga & Stok */}
+                        <div className="flex flex-col gap-2">
+                            <p className="text-3xl font-extrabold">
+                                Rp
+                                {selectedVariant
+                                    ? Math.floor(
+                                          selectedVariant.price
+                                      ).toLocaleString("id-ID", {
+                                          minimumFractionDigits: 0,
+                                          maximumFractionDigits: 0,
+                                      })
+                                    : "0"}
+                            </p>
+
+                            {selectedVariant &&
+                                selectedVariant.original_price && (
+                                    <div className="flex items-center gap-2">
+                                        <div className="px-2 py-1 text-xs font-bold text-red-500 bg-red-200 rounded-sm">
+                                            {Math.abs(
+                                                ((selectedVariant.price -
+                                                    selectedVariant.original_price) /
+                                                    selectedVariant.original_price) *
+                                                    100
+                                            ).toFixed(0)}
+                                            %
+                                        </div>
+
+                                        <del className="text-gray-600 opacity-50">
+                                            Rp{" "}
+                                            {Math.floor(
+                                                selectedVariant.original_price
+                                            ).toLocaleString("id-ID", {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            })}
+                                        </del>
+                                    </div>
+                                )}
                         </div>
 
                         {/* Tombol Add to Cart & Checkout */}
@@ -435,9 +415,9 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             <button
                                 onClick={handleAddToCart}
                                 disabled={!isVariantSelected || isOutOfStock}
-                                className={`px-6 py-3 rounded text-white ${
+                                className={`px-6 py-3 rounded-md text-white ${
                                     isVariantSelected && !isOutOfStock
-                                        ? "bg-blue-500 hover:bg-blue-600"
+                                        ? "bg-green-500 hover:bg-green-600 transform duration-300"
                                         : "bg-gray-400 cursor-not-allowed"
                                 }`}
                             >
@@ -445,11 +425,49 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </button>
                             <button
                                 onClick={handleCheckout}
-                                className="px-6 py-3 text-white bg-green-500 rounded hover:bg-green-600"
+                                className="px-6 py-3 text-green-500 border border-green-500 rounded-md"
                             >
                                 Checkout
                             </button>
                         </div>
+                    </div>
+
+                    <hr className="my-7" />
+
+                    {/* description */}
+                    <div className="mb-4">
+                        <h3 className="text-base font-bold text-slate-900">
+                            Description
+                        </h3>
+
+                        {product.description?.trim() ? (
+                            <>
+                                <div
+                                    ref={descriptionRef}
+                                    className={`prose-sm prose text-pretty text-xs/5 md:text-sm/6 text-slate-500 ${
+                                        isExpanded ? "" : "line-clamp-5"
+                                    }`}
+                                >
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {product.description}
+                                    </ReactMarkdown>
+                                </div>
+                                {showReadMore && (
+                                    <button
+                                        onClick={() =>
+                                            setIsExpanded(!isExpanded)
+                                        }
+                                        className="mt-1 text-xs underline text-slate-500"
+                                    >
+                                        {isExpanded ? "Show less" : "Read more"}
+                                    </button>
+                                )}
+                            </>
+                        ) : (
+                            <p className="text-sm font-light text-slate-400">
+                                No description.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
