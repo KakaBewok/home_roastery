@@ -17,6 +17,8 @@ class Cart extends Model
         'user_id'
     ];
 
+    protected $appends = ['total_price', 'total_quantity'];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -25,5 +27,17 @@ class Cart extends Model
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    public function getTotalPriceAttribute()
+    {
+        return $this->items->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
+    }
+
+    public function getTotalQuantityAttribute()
+    {
+        return $this->items->sum('quantity');
     }
 }

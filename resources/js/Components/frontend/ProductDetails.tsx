@@ -12,8 +12,12 @@ import Price from "./Price";
 import { Button } from "../ui/button";
 import { Star } from "lucide-react";
 import { Cart } from "@/types/frontend/cart";
+import { usePage } from "@inertiajs/react";
+import useCart from "@/Hooks/useCart"; // Adjust the import path as needed
+import { CartItem } from "@/types/frontend/cartItem";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
+    const { auth } = usePage().props;
     const [selectedImage, setSelectedImage] = useState<string>(
         product.photos && product.photos.length > 0
             ? product.photos[0].image_url
@@ -28,8 +32,8 @@ export const ProductDetails = ({ product }: { product: Product }) => {
         product.displayed_product_data.type
     );
     const [quantity, setQuantity] = useState(1);
-    const [cart, setCart] = useState<Cart[]>([]);
-    const [notification, setNotification] = useState("");
+    const { addToCart, notification } = useCart();
+    // const [notification, setNotification] = useState("");
 
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [showReadMore, setShowReadMore] = useState<boolean>(false);
@@ -70,19 +74,18 @@ export const ProductDetails = ({ product }: { product: Product }) => {
     const handleAddToCart = () => {
         if (!isVariantSelected || isOutOfStock) return;
 
-        const newItem: Cart = {
-            id: "random-id-" + Math.random().toString(36).substr(2, 9),
-            name: product.name,
+        const newItem: CartItem = {
+            id: `${product.id}-${selectedSize}-${selectedType}`,
+            product_id: product.id,
             size: selectedSize,
             type: selectedType,
             price: selectedVariant.price,
             quantity: quantity,
+            stock: selectedVariant.stock,
         };
 
-        setCart([...cart, newItem]);
-        setNotification("Produk berhasil ditambahkan ke keranjang!");
-
-        setTimeout(() => setNotification(""), 3000); // Hapus notifikasi setelah 3 detik
+        // Tambahkan ke cart menggunakan custom hook
+        addToCart(newItem);
     };
 
     const handleCheckout = () => {

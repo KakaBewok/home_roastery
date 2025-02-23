@@ -1,8 +1,9 @@
+import { CartItem } from "./cartItem";
+
 export interface Cart {
     id: string;
-    name: string;
-    size: string;
-    type: string;
-    price: number;
-    quantity: number;
+    userId: string;
+    items: CartItem[];
+    total_quantity: number;
+    total_price: number;
 }

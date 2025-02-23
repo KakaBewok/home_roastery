@@ -21,7 +21,11 @@ class CartItemFactory extends Factory
         return [
             'cart_id' => Cart::factory(),
             'product_id' => Product::factory(),
-            'quantity' => $this->faker->numberBetween(1, 10),
+            'size' => $this->faker->randomElement(['100gr', '250gr', '500gr', '1kg']),
+            'type' => $this->faker->randomElement(['Coarse', 'Fine']),
+            'quantity' => $this->faker->numberBetween(1, 5),
+            'price' => $this->faker->randomFloat(2, 10000, 500000),
+            'stock' => $this->faker->numberBetween(1, 50),
         ];
     }
 }
