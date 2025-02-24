@@ -9,59 +9,100 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    // Menampilkan semua item di cart
-    public function index()
+    public function show(Request $request)
     {
-        $cart = Cart::with('items')->where('user_id', Auth::id())->first();
+        $cart = Cart::with('cartItems.product')
+            ->where('user_id', $request->user()->id)
+            ->firstOrCreate(['user_id' => $request->user()->id]);
 
-        return inertia('Cart/Index', [
-            'cart' => $cart,
+        return Inertia::render('frontend/cart', [
+            'cart' => $cart
         ]);
     }
 
-    // Menyimpan atau memperbarui cart
-    public function store(Request $request)
+    public function addItem(Request $request)
     {
-        $items = json_decode($request->items, true); // Decode JSON dari React
+        $cart = Cart::firstOrCreate(['user_id' => $request->user()->id]);
 
-        if (!$items || !is_array($items)) {
-            return response()->json(['error' => 'Format item tidak valid'], 400);
-        }
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'size' => 'required|string',
+            'type' => 'required|string',
+            'quantity' => 'required|integer|min:1',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
+        ]);
 
-        $cart = Cart::firstOrCreate(
-            ['user_id' => Auth::id()],
-            ['status' => 'active']
-        );
+        $cart->cartItems()->create($validated);
 
-        foreach ($items as $item) {
-            if (!isset($item['product_id'], $item['size'], $item['type'], $item['price'], $item['quantity'])) {
-                continue; // Lewatkan item yang tidak valid
-            }
-
-            $cart->items()->updateOrCreate(
-                [
-                    'product_id' => $item['product_id'],
-                    'size' => $item['size'],
-                    'type' => $item['type'],
-                ],
-                [
-                    'price' => $item['price'],
-                    'quantity' => $item['quantity'],
-                ]
-            );
-        }
-
-        return redirect()->back()->with('success', 'Item berhasil ditambahkan ke keranjang!');
+        return redirect()->back();
     }
 
-    // Menghapus item dari cart
-    public function destroy(CartItem $item)
+    public function updateItem(Request $request, $id)
     {
+        $item = CartItem::findOrFail($id);
+        $validated = $request->validate([
+            'quantity' => 'nullable|integer|min:1',
+            'price' => 'nullable|numeric',
+        ]);
+
+        $item->update($validated);
+
+        return redirect()->back();
+    }
+
+    public function removeItem($id)
+    {
+        $item = CartItem::findOrFail($id);
         $item->delete();
-        return redirect()->back()->with('success', 'Item berhasil dihapus dari keranjang.');
+
+        return redirect()->back();
+    }
+
+    public function clearCart(Request $request)
+    {
+        $cart = Cart::where('user_id', $request->user()->id)->first();
+        if ($cart) {
+            $cart->cartItems()->delete();
+        }
+
+        return redirect()->back();
+    }
+
+    public function checkout(Request $request)
+    {
+        $cart = Cart::with('cartItems.product')
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        try {
+            DB::transaction(function () use ($cart) {
+                foreach ($cart->cartItems as $item) {
+                    // Lock produk untuk menghindari race condition
+                    $product = $item->product()->lockForUpdate()->first();
+
+                    // Validasi stok
+                    if ($product->stock < $item->quantity) {
+                        throw new \Exception("Stok tidak mencukupi untuk {$product->name}");
+                    }
+
+                    // Kurangi stok
+                    $product->stock -= $item->quantity;
+                    $product->save();
+                }
+
+                // Kosongkan keranjang setelah checkout
+                $cart->cartItems()->delete();
+            });
+
+            return redirect()->back()->with('success', 'Checkout berhasil! Stok produk telah diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['stock' => $e->getMessage()]);
+        }
     }
 }

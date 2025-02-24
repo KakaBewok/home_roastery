@@ -13,7 +13,7 @@ import { Button } from "../ui/button";
 import { Star } from "lucide-react";
 import { Cart } from "@/types/frontend/cart";
 import { usePage } from "@inertiajs/react";
-import useCart from "@/Hooks/useCart"; // Adjust the import path as needed
+import { useCart } from "@/Hooks/useCart";
 import { CartItem } from "@/types/frontend/cartItem";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
@@ -32,7 +32,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
         product.displayed_product_data.type
     );
     const [quantity, setQuantity] = useState(1);
-    const { addToCart, notification } = useCart();
+    const { addItem } = useCart();
     // const [notification, setNotification] = useState("");
 
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -85,7 +85,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
         };
 
         // Tambahkan ke cart menggunakan custom hook
-        addToCart(newItem);
+        addItem(newItem);
     };
 
     const handleCheckout = () => {
@@ -214,11 +214,11 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                     </div>
 
                     {/* Notifikasi */}
-                    {notification && (
+                    {/* {notification && (
                         <div className="p-2 mt-2 text-green-800 bg-green-300 rounded">
                             {notification}
                         </div>
-                    )}
+                    )} */}
 
                     <div className="flex flex-col gap-5 py-5">
                         {/* Pilihan Ukuran */}
@@ -378,8 +378,8 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             <p className="text-3xl font-extrabold">
                                 Rp
                                 {selectedVariant
-                                    ? Math.floor(
-                                          selectedVariant.price
+                                    ? (
+                                          selectedVariant.price * quantity
                                       ).toLocaleString("id-ID", {
                                           minimumFractionDigits: 0,
                                           maximumFractionDigits: 0,
