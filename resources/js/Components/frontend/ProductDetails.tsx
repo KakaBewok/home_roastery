@@ -15,6 +15,7 @@ import { Cart } from "@/types/frontend/cart";
 import { usePage } from "@inertiajs/react";
 import { useCart } from "@/Hooks/useCart";
 import { CartItem } from "@/types/frontend/cartItem";
+import { ProductDetailImage } from "./ProductDetailImage";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
     const { auth } = usePage().props;
@@ -84,7 +85,6 @@ export const ProductDetails = ({ product }: { product: Product }) => {
             stock: selectedVariant.stock,
         };
 
-        // Tambahkan ke cart menggunakan custom hook
         addItem(newItem);
     };
 
@@ -103,79 +103,12 @@ export const ProductDetails = ({ product }: { product: Product }) => {
 
     return (
         <div className="flex flex-col w-full gap-10 py-12 md:flex-row md:px-3">
-            <div className="w-full md:w-1/2">
-                {/* Desktop */}
-                <div className="hidden md:block">
-                    {product.photos && product.photos.length > 0 ? (
-                        <img
-                            src={`${
-                                import.meta.env.VITE_APP_URL
-                            }/storage/${selectedImage}`}
-                            alt="Product photo"
-                            className="object-cover w-full border rounded-sm h-96"
-                        />
-                    ) : (
-                        <img
-                            src={`${selectedImage}`}
-                            alt="Product photo"
-                            className="object-cover w-full border rounded-sm h-96"
-                        />
-                    )}
-                    {/* Thumbnail */}
-                    <div className="flex gap-2 mt-4">
-                        {product.photos.map((image, index) => (
-                            <img
-                                key={index}
-                                src={`${import.meta.env.VITE_APP_URL}/storage/${
-                                    image.image_url
-                                }`}
-                                alt="Thumbnail"
-                                className={`w-20 h-20 object-cover cursor-pointer border-2 rounded-sm ${
-                                    selectedImage === image.image_url
-                                        ? "border-orange-500"
-                                        : "border-slate-200"
-                                }`}
-                                onClick={() =>
-                                    setSelectedImage(image.image_url)
-                                }
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* mobile */}
-                <div className="block md:hidden">
-                    <Swiper
-                        modules={[Navigation, Pagination]}
-                        spaceBetween={10}
-                        slidesPerView={1}
-                        pagination={{ clickable: true }}
-                        className="w-full"
-                    >
-                        {product.photos && product.photos.length > 0 ? (
-                            product.photos.map((image, index) => (
-                                <SwiperSlide key={index}>
-                                    <img
-                                        src={`${
-                                            import.meta.env.VITE_APP_URL
-                                        }/storage/${image.image_url}`}
-                                        alt="Product Image"
-                                        className="object-cover w-full h-80"
-                                    />
-                                </SwiperSlide>
-                            ))
-                        ) : (
-                            <SwiperSlide>
-                                <img
-                                    src={`${imageNotFound}`}
-                                    alt="Product Image"
-                                    className="object-cover w-full h-80"
-                                />
-                            </SwiperSlide>
-                        )}
-                    </Swiper>
-                </div>
-            </div>
+            <ProductDetailImage
+                product={product}
+                selectedImage={selectedImage}
+                imageNotFound={imageNotFound}
+                setSelectedImage={setSelectedImage}
+            />
 
             <div className="w-full md:w-1/2 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400">
                 <div className="px-5">
