@@ -1,5 +1,5 @@
 import { Product } from "@/types/frontend/product";
-import { useEffect, useRef, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -16,6 +16,7 @@ import { usePage } from "@inertiajs/react";
 import { useCart } from "@/Hooks/useCart";
 import { CartItem } from "@/types/frontend/cartItem";
 import { ProductDetailImage } from "./ProductDetailImage";
+import { Description } from "./Description";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
     const { auth } = usePage().props;
@@ -154,7 +155,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                     )} */}
 
                     <div className="flex flex-col gap-5 py-5">
-                        {/* Pilihan Ukuran */}
+                        {/* size */}
                         <div>
                             <h3 className="mb-1 text-base font-medium">
                                 Packaging size:{" "}
@@ -205,7 +206,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </div>
                         </div>
 
-                        {/* Pilihan Tipe */}
+                        {/* type */}
                         <div>
                             <h3 className="mb-1 text-base font-medium">
                                 Grinding options:{" "}
@@ -269,7 +270,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </div>
                         </div>
 
-                        {/* Pilihan Quantity */}
+                        {/* qty */}
                         <div>
                             <h3 className="mb-1 text-base font-medium">
                                 Qty:{" "}
@@ -306,7 +307,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </div>
                         </div>
 
-                        {/* Harga & Stok */}
+                        {/* price */}
                         <div className="flex flex-col gap-2">
                             <p className="text-3xl font-extrabold">
                                 Rp
@@ -346,7 +347,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                                 )}
                         </div>
 
-                        {/* Tombol Add to Cart & Checkout */}
+                        {/* buttons */}
                         <div className="flex space-x-4">
                             <button
                                 onClick={handleAddToCart}
@@ -370,41 +371,13 @@ export const ProductDetails = ({ product }: { product: Product }) => {
 
                     <hr className="my-7" />
 
-                    {/* description */}
-                    <div className="mb-4">
-                        <h3 className="text-base font-bold text-slate-900">
-                            Description
-                        </h3>
-
-                        {product.description?.trim() ? (
-                            <>
-                                <div
-                                    ref={descriptionRef}
-                                    className={`prose-sm prose text-pretty text-xs/5 md:text-sm/6 text-slate-500 ${
-                                        isExpanded ? "" : "line-clamp-5"
-                                    }`}
-                                >
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                        {product.description}
-                                    </ReactMarkdown>
-                                </div>
-                                {showReadMore && (
-                                    <button
-                                        onClick={() =>
-                                            setIsExpanded(!isExpanded)
-                                        }
-                                        className="mt-1 text-xs underline text-slate-500"
-                                    >
-                                        {isExpanded ? "Show less" : "Read more"}
-                                    </button>
-                                )}
-                            </>
-                        ) : (
-                            <p className="text-sm font-light text-slate-400">
-                                No description.
-                            </p>
-                        )}
-                    </div>
+                    <Description
+                        product={product}
+                        showReadMore={showReadMore}
+                        descriptionRef={descriptionRef}
+                        isExpanded={isExpanded}
+                        setIsExpanded={setIsExpanded}
+                    />
                 </div>
             </div>
         </div>
