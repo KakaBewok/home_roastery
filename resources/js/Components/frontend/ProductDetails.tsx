@@ -1,46 +1,35 @@
 import { Product } from "@/types/frontend/product";
-import { SetStateAction, useEffect, useRef, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { useEffect, useRef, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import imageNotFound from "../../../../public/images/image-not-found.jpg";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import Price from "./Price";
 import { Button } from "../ui/button";
 import { Star } from "lucide-react";
-import { Cart } from "@/types/frontend/cart";
-import { usePage } from "@inertiajs/react";
 import { useCart } from "@/Hooks/useCart";
 import { CartItem } from "@/types/frontend/cartItem";
 import { ProductDetailImage } from "./ProductDetailImage";
 import { Description } from "./Description";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
-    const { auth } = usePage().props;
     const [selectedImage, setSelectedImage] = useState<string>(
         product.photos && product.photos.length > 0
             ? product.photos[0].image_url
             : imageNotFound
     );
     const roundedRating = Math.ceil(product.average_rating || 0);
-
     const [selectedSize, setSelectedSize] = useState<string | null>(
         product.displayed_product_data.size
     );
     const [selectedType, setSelectedType] = useState<string | null>(
         product.displayed_product_data.type
     );
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState<number>(1);
     const { addItem } = useCart();
-    // const [notification, setNotification] = useState("");
-
+    // for description product
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [showReadMore, setShowReadMore] = useState<boolean>(false);
     const descriptionRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
         if (descriptionRef.current) {
             const lineHeight = parseFloat(
@@ -55,16 +44,15 @@ export const ProductDetails = ({ product }: { product: Product }) => {
     const selectedProductSize = sizes.find(
         (size) => size.size === selectedSize
     );
+    //get unique types
     const types =
         selectedProductSize?.variants
             .map((variant) => variant.type)
             .filter((value, index, self) => self.indexOf(value) === index) ||
         [];
-
     const selectedVariant = selectedProductSize?.variants.find(
         (variant) => variant.type === selectedType
     );
-
     const maxStock = selectedVariant?.stock || 0;
     const isVariantSelected = !!(
         selectedSize &&
