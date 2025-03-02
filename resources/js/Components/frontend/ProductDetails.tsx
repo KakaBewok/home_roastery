@@ -141,12 +141,78 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </div>
                         )}
                     </div>
-                    {/* Notifikasi */}
-                    {/* {notification && (
-                        <div className="p-2 mt-2 text-green-800 bg-green-300 rounded">
-                            {notification}
-                        </div>
-                    )} */}
+
+                    {/* price */}
+                    <div className="flex flex-col gap-2">
+                        <p className="text-3xl font-extrabold">
+                            Rp
+                            {selectedVariant
+                                ? (
+                                      selectedVariant.price * quantity
+                                  ).toLocaleString("id-ID", {
+                                      minimumFractionDigits: 0,
+                                      maximumFractionDigits: 0,
+                                  })
+                                : "0"}
+                        </p>
+
+                        {selectedVariant && selectedVariant.original_price && (
+                            <div className="flex items-center gap-2">
+                                <div className="px-2 py-1 text-xs font-bold text-red-500 bg-red-200 rounded-sm">
+                                    {Math.abs(
+                                        ((selectedVariant.price -
+                                            selectedVariant.original_price) /
+                                            selectedVariant.original_price) *
+                                            100
+                                    ).toFixed(0)}
+                                    %
+                                </div>
+
+                                <del className="text-gray-600 opacity-50">
+                                    Rp{" "}
+                                    {Math.floor(
+                                        selectedVariant.original_price
+                                    ).toLocaleString("id-ID", {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0,
+                                    })}
+                                </del>
+                            </div>
+                        )}
+                    </div>
+
+                    <Description
+                        product={product}
+                        showReadMore={showReadMore}
+                        descriptionRef={descriptionRef}
+                        isExpanded={isExpanded}
+                        setIsExpanded={setIsExpanded}
+                    />
+
+                    <ProductModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onConfirm={handleConfirm}
+                    />
+
+                    <div className="flex space-x-4">
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            disabled={!isVariantSelected || isOutOfStock}
+                            className={`px-6 py-3 rounded-md text-white bg-green-500 hover:bg-green-600 transform duration-300`}
+                        >
+                            Add to Cart
+                        </button>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            disabled={!isVariantSelected || isOutOfStock}
+                            className="px-6 py-3 text-green-500 border border-green-500 rounded-md"
+                        >
+                            Checkout
+                        </button>
+                    </div>
+
+                    {/*  */}
                     <div className="flex flex-col gap-5 py-5">
                         {/* size */}
                         <div>
@@ -361,29 +427,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </button>
                         </div>
                     </div>
-                    //MODAL
-                    <div className="p-4">
-                        <Button onClick={() => setIsModalOpen(true)}>
-                            Add to Cart
-                        </Button>
-                        <Button onClick={() => setIsModalOpen(true)}>
-                            Checkout
-                        </Button>
-
-                        <ProductModal
-                            isOpen={isModalOpen}
-                            onClose={() => setIsModalOpen(false)}
-                            onConfirm={handleConfirm}
-                        />
-                    </div>
-                    <hr className="my-7" />
-                    <Description
-                        product={product}
-                        showReadMore={showReadMore}
-                        descriptionRef={descriptionRef}
-                        isExpanded={isExpanded}
-                        setIsExpanded={setIsExpanded}
-                    />
+                    {/*  */}
                 </div>
             </div>
         </div>
