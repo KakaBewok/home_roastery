@@ -10,8 +10,10 @@ import { useCart } from "@/Hooks/useCart";
 import { CartItem } from "@/types/frontend/cartItem";
 import { ProductDetailImage } from "./ProductDetailImage";
 import { Description } from "./Description";
+import ProductModal from "./ProductModal";
 
 export const ProductDetails = ({ product }: { product: Product }) => {
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedImage, setSelectedImage] = useState<string>(
         product.photos && product.photos.length > 0
             ? product.photos[0].image_url
@@ -90,6 +92,11 @@ export const ProductDetails = ({ product }: { product: Product }) => {
         alert("Melanjutkan ke halaman checkout...");
     };
 
+    const handleConfirm = (size: string, type: string) => {
+        console.log(`Produk dipilih - Ukuran: ${size}, Tipe: ${type}`);
+        setIsModalOpen(false);
+    };
+
     return (
         <div className="flex flex-col w-full gap-10 py-12 md:flex-row md:px-3">
             <ProductDetailImage
@@ -134,14 +141,12 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </div>
                         )}
                     </div>
-
                     {/* Notifikasi */}
                     {/* {notification && (
                         <div className="p-2 mt-2 text-green-800 bg-green-300 rounded">
                             {notification}
                         </div>
                     )} */}
-
                     <div className="flex flex-col gap-5 py-5">
                         {/* size */}
                         <div>
@@ -356,9 +361,22 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                             </button>
                         </div>
                     </div>
+                    //MODAL
+                    <div className="p-4">
+                        <Button onClick={() => setIsModalOpen(true)}>
+                            Add to Cart
+                        </Button>
+                        <Button onClick={() => setIsModalOpen(true)}>
+                            Checkout
+                        </Button>
 
+                        <ProductModal
+                            isOpen={isModalOpen}
+                            onClose={() => setIsModalOpen(false)}
+                            onConfirm={handleConfirm}
+                        />
+                    </div>
                     <hr className="my-7" />
-
                     <Description
                         product={product}
                         showReadMore={showReadMore}
