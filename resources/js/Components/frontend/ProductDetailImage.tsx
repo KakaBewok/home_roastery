@@ -7,11 +7,13 @@ export const ProductDetailImage = ({
     selectedImage,
     imageNotFound,
     setSelectedImage,
+    className,
 }: {
     product: Product;
     selectedImage: string;
     imageNotFound: string;
     setSelectedImage: (image: string) => void;
+    className?: string;
 }) => {
     return (
         <div className="w-full md:w-1/2">
@@ -23,13 +25,13 @@ export const ProductDetailImage = ({
                             import.meta.env.VITE_APP_URL
                         }/storage/${selectedImage}`}
                         alt="Product photo"
-                        className="object-cover w-full border rounded-sm h-96"
+                        className={className}
                     />
                 ) : (
                     <img
                         src={`${selectedImage}`}
                         alt="Product photo"
-                        className="object-cover w-full border rounded-sm h-96"
+                        className={className}
                     />
                 )}
                 {/* Thumbnail */}

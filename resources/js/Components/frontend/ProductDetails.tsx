@@ -104,6 +104,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                 selectedImage={selectedImage}
                 imageNotFound={imageNotFound}
                 setSelectedImage={setSelectedImage}
+                className="object-cover w-full border rounded-sm h-96"
             />
 
             <div className="w-full md:w-1/2 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400">

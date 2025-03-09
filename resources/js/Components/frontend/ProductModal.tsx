@@ -10,6 +10,8 @@ import { Button } from "@/Components/ui/button";
 import { Product } from "@/types/frontend/product";
 import { CartItem } from "@/types/frontend/cartItem";
 import { useCart } from "@/Hooks/useCart";
+import { ProductDetailImage } from "./ProductDetailImage";
+import imageNotFound from "../../../../public/images/image-not-found.jpg";
 
 interface ProductModalProps {
     product: Product;
@@ -26,6 +28,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
 }) => {
     const [size, setSize] = useState("M");
     const [type, setType] = useState("Standard");
+    const [selectedImage, setSelectedImage] = useState<string>(
+        product.photos && product.photos.length > 0
+            ? product.photos[0].image_url
+            : imageNotFound
+    );
     //
     const { addItem } = useCart();
     const [selectedSize, setSelectedSize] = useState<string | null>(
@@ -89,6 +96,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 <DialogHeader>
                     <DialogTitle>Pilih Ukuran dan Tipe Produk</DialogTitle>
                 </DialogHeader>
+
+                <ProductDetailImage
+                    product={product}
+                    selectedImage={selectedImage}
+                    imageNotFound={imageNotFound}
+                    setSelectedImage={setSelectedImage}
+                />
 
                 <div className="space-y-4">
                     <div className="flex flex-col gap-5 py-5">
