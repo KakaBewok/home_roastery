@@ -1,20 +1,22 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { Product } from "@/types/frontend/product";
+import { useState } from "react";
+import imageNotFound from "../../../../public/images/image-not-found.jpg";
 
 export const ProductDetailImage = ({
     product,
-    selectedImage,
-    imageNotFound,
-    setSelectedImage,
     className,
 }: {
     product: Product;
-    selectedImage: string;
-    imageNotFound: string;
-    setSelectedImage: (image: string) => void;
     className?: string;
 }) => {
+    const [selectedImage, setSelectedImage] = useState<string>(
+        product.photos && product.photos.length > 0
+            ? product.photos[0].image_url
+            : imageNotFound
+    );
+
     return (
         <div className="w-full md:w-1/2">
             {/* Desktop */}

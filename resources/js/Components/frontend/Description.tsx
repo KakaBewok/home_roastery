@@ -1,20 +1,23 @@
 import { Product } from "@/types/frontend/product";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-export const Description = ({
-    product,
-    showReadMore,
-    descriptionRef,
-    isExpanded,
-    setIsExpanded,
-}: {
-    product: Product;
-    showReadMore: boolean;
-    descriptionRef: React.RefObject<HTMLDivElement>;
-    isExpanded: boolean;
-    setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+export const Description = ({ product }: { product: Product }) => {
+    const descriptionRef = useRef<HTMLDivElement>(null);
+    const [showReadMore, setShowReadMore] = useState<boolean>(false);
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (descriptionRef.current) {
+            const lineHeight = parseFloat(
+                getComputedStyle(descriptionRef.current).lineHeight
+            );
+            const maxHeight = lineHeight * 5;
+            setShowReadMore(descriptionRef.current.scrollHeight > maxHeight);
+        }
+    }, [product.description]);
+
     return (
         <div className="mb-4">
             <h3 className="text-base font-bold text-slate-900">Description</h3>
