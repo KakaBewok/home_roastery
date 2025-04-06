@@ -30,35 +30,16 @@ class Product extends Model
     {
         self::deleting(static function (Product $product): void {
             if ($product->photos->isNotEmpty()) {
-                foreach ($product->photos as $photo) {
-                    if (Storage::disk('public')->exists($photo->image_url)) {
-                        Storage::disk('public')->delete($photo->image_url);
-                    }
-                }
+                $product->deleteAllPhotos();
             }
         });
 
         self::saving(static function (Product $product): void {
-            $sizes = [];
-
-            foreach ($product->sizes as $size) {
-                if (in_array($size->size, $sizes)) {
-                    throw new \Exception('Duplicate size is not allowed in the same product!');
-                }
-                $sizes[] = $size->size;
-
-                $variantTypes = [];
-
-                foreach ($size->variants as $variant) {
-                    if (in_array($variant->type, $variantTypes)) {
-                        throw new \Exception('Duplicate type is not allowed in the same product size!');
-                    }
-                    $variantTypes[] = $variant->type;
-                }
-            }
+            $product->validateUniqueSizeAndVariantTypes();
         });
     }
 
+    // --- RELATIONS --- //
     public function variants()
     {
         return $this->hasManyThrough(
@@ -105,7 +86,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductSize::class);
     }
+    // --- RELATIONS --- //
 
+    // --- ACCESSORS --- //
     public function getAverageRatingAttribute()
     {
         return $this->ratings()->avg('rating') ?? 0;
@@ -113,12 +96,18 @@ class Product extends Model
 
     public function getStartingPriceAttribute()
     {
-        return $this->sizes()->with('variants')->get()->pluck('variants')->flatten()->where('stock', '>', 0)->min('price') ?? 0;
+        return $this->getAllVariants()
+            ->where('stock', '>', 0)
+            ->min('price') ?? 0;
+        // return $this->sizes()->with('variants')->get()->pluck('variants')->flatten()->where('stock', '>', 0)->min('price') ?? 0;
     }
 
     public function getTotalStockAttribute()
     {
-        return $this->sizes()->with('variants')->get()->pluck('variants')->flatten()->sum('stock');
+        return $this->getAllVariants()
+            ->where('stock', '>', 0)
+            ->sum('stock');
+        // return $this->sizes()->with('variants')->get()->pluck('variants')->flatten()->sum('stock');
     }
 
     public function getIsOutOfStockAttribute()
@@ -133,14 +122,18 @@ class Product extends Model
 
     public function getAvailableTypesAttribute()
     {
-        return $this->sizes()
-            ->with('variants')
-            ->get()
-            ->pluck('variants')
-            ->flatten()
+        return $this->getAllVariants()
             ->pluck('type')
             ->unique()
             ->values();
+        // return $this->sizes()
+        //     ->with('variants')
+        //     ->get()
+        //     ->pluck('variants')
+        //     ->flatten()
+        //     ->pluck('type')
+        //     ->unique()
+        //     ->values();
     }
 
     public function getDisplayedProductDataAttribute()
@@ -150,12 +143,43 @@ class Product extends Model
 
         return $this->formatDisplayedProductData($bestDiscountVariant);
     }
+    // --- ACCESSORS --- //
+
+    // --- HELPERS --- //
+    protected function deleteAllPhotos(): void
+    {
+        foreach ($this->photos as $photo) {
+            if (Storage::disk('public')->exists($photo->image_url)) {
+                Storage::disk('public')->delete($photo->image_url);
+            }
+        }
+    }
+
+    protected function validateUniqueSizeAndVariantTypes(): void
+    {
+        $sizes = [];
+
+        foreach ($this->sizes as $size) {
+            if (in_array($size->size, $sizes)) {
+                throw new \Exception('Duplicate size is not allowed in the same product!');
+            }
+            $sizes[] = $size->size;
+
+            $variantTypes = [];
+
+            foreach ($size->variants as $variant) {
+                if (in_array($variant->type, $variantTypes)) {
+                    throw new \Exception('Duplicate type is not allowed in the same product size!');
+                }
+                $variantTypes[] = $variant->type;
+            }
+        }
+    }
 
     private function getAllVariants()
     {
-        return $this->sizes()
-            ->with('variants')
-            ->get()
+        return $this->sizes
+            ->loadMissing('variants') // only loads if not already loaded
             ->pluck('variants')
             ->flatten();
     }
@@ -211,4 +235,5 @@ class Product extends Model
             'discount_percent' => '0%'
         ];
     }
+    // --- HELPERS --- //
 }
