@@ -59,9 +59,17 @@ class Product extends Model
         });
     }
 
-    //
-    // Relationships
-    //
+    public function variants()
+    {
+        return $this->hasManyThrough(
+            ProductVariant::class,   // The final target model we want to access (ProductVariant)
+            ProductSize::class,      // The intermediate model that connects Product to ProductVariant
+            'product_id',            // Foreign key on the intermediate table (product_sizes) that references products
+            'product_size_id',       // Foreign key on the final table (product_variants) that references product_sizes
+            'id',                    // Local key on the current model (products) to match with product_sizes.product_id
+            'id'                     // Local key on the intermediate model (product_sizes) to match with product_variants.product_size_id
+        );
+    }
 
     public function category(): BelongsTo
     {

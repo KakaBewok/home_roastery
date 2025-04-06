@@ -107,35 +107,19 @@ class ProductResource extends Resource
         return $table
             ->query(
                 Product::query()
-                    ->select('products.*')
-                    ->selectRaw('(
-                        SELECT SUM(product_variants.stock) 
-                        FROM product_variants 
-                        JOIN product_sizes ON product_variants.product_size_id = product_sizes.id
-                        WHERE product_sizes.product_id = products.id
-                    ) AS total_stock')
-                    ->selectRaw('(
-                        SELECT MIN(product_variants.price) 
-                        FROM product_variants 
-                        JOIN product_sizes ON product_variants.product_size_id = product_sizes.id
-                        WHERE product_sizes.product_id = products.id
-                    ) AS starting_price')
+                    ->withSum('variants', 'stock')
+                    ->withMin('variants', 'price')
             )
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('total_stock')
-                    ->label('Total Stock')
-                    ->sortable(query: function ($query, $direction) {
-                        return $query->orderBy('total_stock', $direction);
-                    }),
 
-                TextColumn::make('starting_price')
+                TextColumn::make('variants_sum_stock')
+                    ->label('Total Stock')->sortable(),
+
+                TextColumn::make('variants_min_price')
                     ->label('Starting Price')
-                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
-                    ->sortable(query: function ($query, $direction) {
-                        return $query->orderBy('starting_price', $direction);
-                    }),
+                    ->formatStateUsing(fn($state) => 'IDR ' . number_format($state, 0, ',', '.'))->sortable(),
 
                 IconColumn::make('is_publish')
                     ->boolean()
