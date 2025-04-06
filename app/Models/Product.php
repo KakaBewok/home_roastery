@@ -59,6 +59,10 @@ class Product extends Model
         });
     }
 
+    //
+    // Relationships
+    //
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

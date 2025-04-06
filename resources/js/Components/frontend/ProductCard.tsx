@@ -2,6 +2,9 @@ import Price from "../../Components/frontend/Price";
 import { Product } from "@/types/frontend/product";
 import { Star } from "lucide-react";
 import { Link } from "@inertiajs/react";
+import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 
 function ProductCard({ product }: { product: Product }) {
     const {
@@ -26,11 +29,28 @@ function ProductCard({ product }: { product: Product }) {
         return "justify-between";
     };
 
+    //
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
+
+        router.visit(route("product.show", product.id), {
+            onFinish: () => setIsLoading(false),
+        });
+    };
+    //
+
     return (
         <Link
             href={route("product.show", product.id)}
             className="block overflow-hidden group"
+            onClick={handleLinkClick}
         >
+            {/* {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
+                    <div className="w-10 h-10 border-b-2 border-gray-900 rounded-full animate-spin"></div>
+                </div>
+            )} */}
             <div className="relative h-[210px] md:h-[250px] lg:h-[280px]">
                 <img
                     src={productImage}
