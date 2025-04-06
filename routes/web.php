@@ -1,29 +1,15 @@
 <?php
 
-use App\Http\Controllers\FrontEndController;
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\CartController;
 
-// Route::get('/', function () {
-//     return Inertia::render('Welcome', [
-//         'canLogin' => Route::has('login'),
-//         'canRegister' => Route::has('register'),
-//         'laravelVersion' => Application::VERSION,
-//         'phpVersion' => PHP_VERSION,
-//     ]);
-// });
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// guest routes
+Route::get('/', [MainController::class, 'home_page'])->name('homepage');
+Route::get('/products/{id}', [MainController::class, 'product_details'])->name('product.show');
 
 Route::middleware('auth')->group(function () {
-    // front end
-    Route::get('/', [FrontEndController::class, 'index'])->name('homepage');
-    Route::get('/products/{id}', [FrontEndController::class, 'show'])->name('product.show');
     //cart
     Route::get('/cart', [CartController::class, 'show']);
     Route::post('/cart/items', [CartController::class, 'addItem']);

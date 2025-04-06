@@ -99,7 +99,6 @@ class Product extends Model
         return $this->getAllVariants()
             ->where('stock', '>', 0)
             ->min('price') ?? 0;
-        // return $this->sizes()->with('variants')->get()->pluck('variants')->flatten()->where('stock', '>', 0)->min('price') ?? 0;
     }
 
     public function getTotalStockAttribute()
@@ -107,7 +106,6 @@ class Product extends Model
         return $this->getAllVariants()
             ->where('stock', '>', 0)
             ->sum('stock');
-        // return $this->sizes()->with('variants')->get()->pluck('variants')->flatten()->sum('stock');
     }
 
     public function getIsOutOfStockAttribute()
@@ -126,14 +124,6 @@ class Product extends Model
             ->pluck('type')
             ->unique()
             ->values();
-        // return $this->sizes()
-        //     ->with('variants')
-        //     ->get()
-        //     ->pluck('variants')
-        //     ->flatten()
-        //     ->pluck('type')
-        //     ->unique()
-        //     ->values();
     }
 
     public function getDisplayedProductDataAttribute()
